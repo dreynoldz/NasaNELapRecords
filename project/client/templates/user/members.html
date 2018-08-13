@@ -2,4 +2,6 @@
 {% block content %}
   <h1>Welcome, <em>{{ current_user.email }}</em>!</h1>
   <h3>This is the members-only page.</h3>
+  
+  <p>Are you an admin? {{ current_user.is_admin() }}</p>
 {% endblock %}

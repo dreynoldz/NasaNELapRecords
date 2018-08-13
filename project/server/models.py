@@ -37,6 +37,9 @@ class User(db.Model):
 
     def get_id(self):
         return self.id
+    
+    def is_admin(self):
+        return self.admin
 
     def __repr__(self):
         return '<User {0}>'.format(self.email)
