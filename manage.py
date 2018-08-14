@@ -7,7 +7,8 @@ import coverage
 from flask.cli import FlaskGroup
 
 from project.server import create_app, db
-from project.server.models import User
+from project.server.models import User, Track, Event
+from datetime import date
 
 
 app = create_app()
@@ -48,7 +49,15 @@ def create_admin():
 @cli.command()
 def create_data():
     """Creates sample data."""
-    pass
+    t = Track(name='Watkins Glen International', short_name='WGI')
+    print(t)
+    e = Event(name='Summer Sizzle 2018', start_date=date(2018, 8, 27), end_date=date(2018, 8, 28))
+    print(e)
+    e.tracks
+    db.session.add(t)
+    db.session.add(e)
+    db.session.commit()
+    #pass
 
 
 @cli.command()
