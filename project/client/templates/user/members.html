@@ -4,4 +4,50 @@
   <h3>This is the members-only page.</h3>
   
   <p>Are you an admin? {{ current_user.is_admin() }}</p>
+  <h2>Tracks:</h2>
+  <div class="datagrid">
+    <table>
+      <thead>
+        <tr>
+          <th width="200px"><strong>Track Name</strong></th>
+          <th width="75px"><strong>Track Abbreviation</strong></th>
+        </tr>
+      </thead>
+      {% for track in tracks %}
+        <tr>
+          <td width="200px">{{ track.name }}</td>
+          <td width="75px">{{ track.short_name }}</td>
+        </tr>
+      {% endfor %}
+    </table>
+  </div>
+
+  <h2>Event:</h2>
+  <div class="datagrid">
+    <table>
+      <thead>
+        <tr>
+          <th width="200px"><strong>Event Name</strong></th>
+          <th width="75px"><strong>Track</strong></th>
+          <th width="75px"><strong>Start Date</strong></th>
+          <th width="75px"><strong>End Date</strong></th>
+        </tr>
+      </thead>
+      {% for event in events %}
+        <tr>
+          <td width="200px">{{ event.name }}</td>
+          <td width="75px">
+            {% for track in event.tracks %} 
+              {{ track.short_name }}
+              {% if not loop.last %}
+                ,
+              {% endif %}
+            {% endfor %}</td> 
+          <td width="75px">{{ event.start_date }}</td>
+          <td width="75px">{{ event.end_date }}</td>
+        </tr>
+      {% endfor %}
+    </table>
+  </div>
+
 {% endblock %}

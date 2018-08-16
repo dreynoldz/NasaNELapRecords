@@ -49,14 +49,23 @@ def create_admin():
 @cli.command()
 def create_data():
     """Creates sample data."""
-    t = Track(name='Watkins Glen International', short_name='WGI')
-    print(t)
-    e = Event(name='Summer Sizzle 2018', start_date=date(2018, 8, 27), end_date=date(2018, 8, 28))
-    print(e)
-    e.tracks
-    db.session.add(t)
-    db.session.add(e)
+    t1 = Track(name='Watkins Glen International', short_name='WGI')
+    t2 = Track(name='Pocono South-East', short_name="POCSE")
+    
+    e1 = Event(name='Summer Sizzle 2018', start_date = date(2018, 8, 27), end_date=date(2018, 8, 28))
+    e2 = Event(name='MPACT', start_date = date(2018, 8, 11), end_date=date(2018, 8, 11))
+    e3 = Event(name='Thunder at the Glen', start_date = date(2018, 9, 28), end_date=date(2018, 9, 30))
+    
+
+    e1.tracks.append(t1)
+    e2.tracks.append(t2)
+    e3.tracks.append(t1)
+    db.session.add_all([t1,t2])
+    db.session.add_all([e1, e2, e3])
     db.session.commit()
+    print(e1.name)
+    print(e1.tracks)
+    print(e2.tracks)
     #pass
 
 

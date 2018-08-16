@@ -44,10 +44,9 @@ class User(db.Model):
     def __repr__(self):
         return '<User {0}>'.format(self.email)
 
-track_event = Table('TrackEvent',
-    db.Column('id', db.Integer, primary_key=True),
-    db.Column('trackId', db.Integer, ForeignKey('tracks.id')),
-    db.Column('eventId', db.Integer, ForeignKey('events.id'))
+TrackEvent = db.Table('TrackEvent',
+    db.Column('trackId', db.Integer, db.ForeignKey('tracks.id')),
+    db.Column('eventId', db.Integer, db.ForeignKey('events.id'))
 )
 
 class Track(db.Model):
@@ -57,7 +56,6 @@ class Track(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(255), nullable=False)
     short_name = db.Column(db.String(255), nullable=False)
-    events =  db.relationship('Event', secondary=track_event, backref='tracks')
     #lap_distance = db.Column(db.Float)
 
     def __init__(self, name, short_name):
@@ -75,11 +73,10 @@ class Event(db.Model):
     name = db.Column(db.String(255), nullable=False)
     start_date = db.Column(db.Date, nullable=False)
     end_date = db.Column(db.Date, nullable=False)
-    tracks = db.relationship('Track', secondary=track_event, back_ref='events')
+    tracks = db.relationship('Track', secondary=TrackEvent, backref='events')
 
     def __init__(self, name, start_date, end_date):
         self.name = name
-        #self.track = track
         self.start_date = start_date
         self.end_date = end_date
     

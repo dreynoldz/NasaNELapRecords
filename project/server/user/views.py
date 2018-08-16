@@ -6,13 +6,20 @@ from flask import render_template, Blueprint, url_for, \
 from flask_login import login_user, logout_user, login_required
 
 from project.server import bcrypt, db
-from project.server.models import User
+from project.server.models import User, Track, Event
 from project.server.user.forms import LoginForm, RegisterForm
 
-
+# Blueprints
 user_blueprint = Blueprint('user', __name__,)
 
+# Helper Functions
+def get_tracks():
+    return db.session.query(Track)
 
+def get_events():
+    return db.session.query(Event)
+
+# Route Handlers
 @user_blueprint.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegisterForm(request.form)
@@ -59,4 +66,8 @@ def logout():
 @user_blueprint.route('/members')
 @login_required
 def members():
-    return render_template('user/members.html')
+    return render_template(
+        'user/members.html',
+        tracks=get_tracks(),
+        events=get_events()
+        )
