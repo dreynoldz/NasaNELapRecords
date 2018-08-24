@@ -1,4 +1,4 @@
-# project/server/user/views.py
+# project/server/admin/views.py
 
 
 from flask import render_template, Blueprint, url_for, \
@@ -19,3 +19,8 @@ admin_blueprint = Blueprint('admin', __name__,)
 @login_required
 def dashboard():
     return render_template('admin/dashboard.html')
+
+@admin_blueprint.route('/users')
+@login_required
+def users():
+    return render_template('admin/users.html')
