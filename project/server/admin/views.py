@@ -6,13 +6,15 @@ from flask import render_template, Blueprint, url_for, \
 from flask_login import login_user, logout_user, login_required
 
 from project.server import bcrypt, db
-from project.server.models import User, Track, Event
+from project.server.models import User
 from project.server.user.forms import LoginForm, RegisterForm
 
 # Blueprints
 admin_blueprint = Blueprint('admin', __name__,)
 
 # Helper Functions
+def get_users():
+    return db.session.query(User)
 
 # Route Handlers
 @admin_blueprint.route('/dashboard')
@@ -23,4 +25,7 @@ def dashboard():
 @admin_blueprint.route('/users')
 @login_required
 def users():
-    return render_template('admin/users.html')
+    return render_template(
+        'admin/users.html',
+        users=get_users()
+        )
