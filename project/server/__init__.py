@@ -59,8 +59,8 @@ def create_app(script_info=None):
     @login_manager.user_loader
     def load_user(user_id):
         return User.query.filter(User.id == int(user_id)).first()
-
-        return app
+    
+        #return app
 
     # error handlers
     @app.errorhandler(401)
