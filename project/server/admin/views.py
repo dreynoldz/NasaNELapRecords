@@ -22,7 +22,7 @@ def check_admin(page):
             return render_template(page)
         else:
             flash('You are not an admin!', 'danger')
-            return render_template('user/members.html')
+            return redirect(url_for("user.members"))
 
 # Route Handlers
 @admin_blueprint.route('/overview')
@@ -32,19 +32,20 @@ def overview():
         return render_template('admin/overview.html')
     else:
         flash('You are not an admin!', 'danger')
-        return render_template('user/members.html')
+        return redirect(url_for("user.members"))
 
 
-@admin_blueprint.route('/users')
+@admin_blueprint.route('/user/main')
 @login_required
 def users():
     if current_user.is_admin():
-        return render_template('admin/users.html', users=get_users())
+        return render_template('admin/user/main.html', users=get_users())
     else:
         flash('You are not an admin!', 'danger')
-        return render_template('user/members.html')
+        return redirect(url_for("user.members"))
 
-@admin_blueprint.route('/create_user', methods=['GET', 'POST'])
+@admin_blueprint.route('/user/create', methods=['GET', 'POST'])
+@login_required
 def create_user():
     if current_user.is_admin():
         form = CreateUserForm(request.form)
@@ -59,13 +60,12 @@ def create_user():
 
             flash('New user created.', 'success')
             return redirect(url_for("admin.users"))
-
-        return render_template('admin/create_user.html', form=form)
+        return render_template('admin/user/create.html', form=form)
     else:
-        flash('You are not an admin!', 'danger')
-        return render_template('user/members.html')
+        flash('You are not an admin!', 'danger') 
+        return redirect(url_for("user.members"))
 
-@admin_blueprint.route('/update_user/<int:user_id>/', methods=['GET', 'POST'])
+@admin_blueprint.route('/user/update/<int:user_id>/', methods=['GET', 'POST'])
 @login_required
 def update_user(user_id):
     if current_user.is_admin():
@@ -76,22 +76,23 @@ def update_user(user_id):
             form.admin.data = user.admin
 
         if form.validate_on_submit():
-            user = User(
+            userForm = User(
                 email=form.email.data,
+                password=user.password,
                 admin=form.admin.data
             )
-            db.session.add(user)
+            db.session.add(userForm)
             db.session.commit()
 
             flash('User updated!.', 'success')
             return redirect(url_for("admin.users"))
         
-        return render_template('admin/update_user.html', user=user, form=form)
+        return render_template('admin/user/update.html', user=user, form=form)
     else:
         flash('You are not an admin!', 'danger')
-        return render_template('user/members.html')
+        return redirect(url_for("user.members"))
 
-@admin_blueprint.route('/delete_user/<int:user_id>/')
+@admin_blueprint.route('/user/delete/<int:user_id>/')
 @login_required
 def delete_user(user_id):
     if current_user.is_admin():
@@ -102,4 +103,4 @@ def delete_user(user_id):
         return redirect(url_for('admin.users'))
     else:
         flash('You are not an admin!', 'danger')
-        return render_template('user/members.html')
+        return redirect(url_for("user.members"))

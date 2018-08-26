@@ -2,10 +2,8 @@
 {% import "bootstrap/wtf.html" as wtf %}
 
 {% block content %}
-
-  <h1 class="page-header">Update User</h1>
-  <h2 class="sub-header">{{ user.email }}</h2>
-
+<h1 class="page-header">Create User</h1>
+<div class="table-responsive">
   <form class="form" role="form" method="post" action="">
 
     {{ form.csrf_token }}
@@ -16,10 +14,12 @@
     <div class="col-lg-4 col-sm-4">
 
       {{ wtf.form_field(form.email) }}
+      {{ wtf.form_field(form.password) }}
+      {{ wtf.form_field(form.confirm) }}
       {{ wtf.form_field(form.admin) }}
 
-      <button class="btn btn-success" type="submit">Update</button>
+      <button class="btn btn-success" type="submit">Create User</button>
     </div>
   </form>
-
+</div>
 {% endblock content %}

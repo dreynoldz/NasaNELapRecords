@@ -25,7 +25,7 @@ class CreateUserForm(FlaskForm):
             EqualTo('password', message='Passwords must match.')
         ]
     )
-    admin = BooleanField('Admin', [DataRequired()])
+    admin = BooleanField('Admin')
 
 class UpdateUserForm(FlaskForm):
     email = StringField(
@@ -36,7 +36,7 @@ class UpdateUserForm(FlaskForm):
             Length(min=6, max=40)
         ]
     )
-    admin = BooleanField('Admin', [DataRequired()])
+    admin = BooleanField('Admin')
 
 class passwordResetForm(FlaskForm):
     email = StringField(
