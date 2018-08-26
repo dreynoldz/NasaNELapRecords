@@ -29,34 +29,36 @@
     <div class="site-content">
       <div class="container-fluid">
 
-        <!-- messages -->
-        {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-        <br>
-        <div class="row">
-          <div class="col-md-12">
-            {% for category, message in messages %}
-            <div class="alert alert-{{ category }}">
-              <a class="close" title="Close" href="#" data-dismiss="alert">&times;</a>
-             {{message}}
-            </div>
-            {% endfor %}
-          </div>
-        </div>
-        {% endif %}
-        {% endwith %}
-
         <div class="row">
           {% include 'admin/sidebar.html' %}
-          <!-- child template -->
-          {% block content %}{% endblock %}
+          <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+            <!-- messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <br>
+            <div class="row">
+              <div class="col-md-12">
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">
+                  <a class="close" title="Close" href="#" data-dismiss="alert">&times;</a>
+                {{message}}
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+            {% endif %}
+            {% endwith %}
+            <!-- child template -->
+            {% block content %}{% endblock %}
+            <!-- errors -->
+            {% if error %}
+              <p class="error"><strong>Error:</strong> {{ error }}</p>
+            {% endif %}
+          </div>
         </div>
         <br>
 
-        <!-- errors -->
-        {% if error %}
-          <p class="error"><strong>Error:</strong> {{ error }}</p>
-        {% endif %}
+        
 
       </div>
     </div>
