@@ -8,6 +8,7 @@ from flask_login import login_user, logout_user, login_required, current_user
 from project.server import bcrypt, db
 from project.server.models import User
 from project.server.admin.forms import CreateUserForm, UpdateUserForm, passwordResetForm
+import sys
 
 # Blueprints
 admin_blueprint = Blueprint('admin', __name__,)
@@ -70,18 +71,24 @@ def create_user():
 def update_user(user_id):
     if current_user.is_admin():
         user = User.query.filter_by(id=user_id).first()
+        
         if user:
             form = UpdateUserForm(request.form)
             form.email.data = user.email
-            form.admin.data = user.admin
+            #form.admin.data = user.admin
 
         if form.validate_on_submit():
-            userForm = User(
-                email=form.email.data,
-                password=user.password,
-                admin=form.admin.data
-            )
-            db.session.add(userForm)
+            print(form.admin.data, file=sys.stderr)
+            if form.admin.data == True:
+                print("Admin", file=sys.stderr)
+                ad=1
+            else:
+                print("Not Admin", file=sys.stderr)
+                ad=0
+
+            data = {'email': form.email.data, 'admin': ad}
+            user = db.session.query(User).filter(User.id==user_id)
+            user.update(data, synchronize_session='evaluate')
             db.session.commit()
 
             flash('User updated!.', 'success')
