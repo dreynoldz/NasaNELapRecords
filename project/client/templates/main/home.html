@@ -4,7 +4,11 @@
 
 <div class="body-content">
   <div class="row">
+    {% if current_user.is_authenticated %}
+      <h1>Welcome  {{ current_user.email }}!</h1>
+    {% else %}
     <h1>Welcome!</h1>
+    {% endif %}
   </div>
 </div>
 
