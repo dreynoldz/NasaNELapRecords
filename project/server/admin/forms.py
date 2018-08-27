@@ -2,7 +2,7 @@
 
 
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SelectField
+from wtforms import StringField, PasswordField, BooleanField, SelectMultipleField, DateField
 from wtforms.validators import DataRequired, Email, Length, EqualTo
 
 class CreateUserForm(FlaskForm):
@@ -63,8 +63,21 @@ class EventForm(FlaskForm):
         'Start Date',
         validators=[DataRequired()]
     )
-    event_date = DateField(
-        'Event Date',
+    end_date = DateField(
+        'End Date',
         validators=[DataRequired()]
     )
-    track = SelectField('Track', choices=[], coerce=int)
+    tracks = SelectMultipleField('Track', choices=[], coerce=int)
+
+class TrackForm(FlaskForm):
+    name = StringField(
+        'Name',
+        validators=[
+            DataRequired(),
+            Length(min=6, max=80)
+        ]
+    )
+    short_name = StringField(
+        'Short Name',
+        validators=[DataRequired()]
+    )

@@ -3,8 +3,8 @@
 
 {% block content %}
 
-  <h1 class="page-header">Update Event</h1>
-  <h2 class="sub-header">{{ event.name }}</h2>
+  <h1 class="page-header">Update Track</h1>
+  <h2 class="sub-header">{{ track.name }}</h2>
   <div class="table-responsive">
     <form class="form" role="form" method="post" action="">
 
@@ -16,9 +16,7 @@
       <div class="col-lg-4 col-sm-4">
 
           {{ wtf.form_field(form.name) }}
-          {{ wtf.form_field(form.start_date) }}
-          {{ wtf.form_field(form.end_date) }}
-          {{ wtf.form_field(form.tracks) }}
+          {{ wtf.form_field(form.short_name) }}
 
         <button class="btn btn-success" type="submit">Update</button>
       </div>

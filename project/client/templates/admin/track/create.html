@@ -2,7 +2,7 @@
 {% import "bootstrap/wtf.html" as wtf %}
 
 {% block content %}
-<h1 class="page-header">Create Event</h1>
+<h1 class="page-header">Create Track</h1>
 <div class="table-responsive">
   <form class="form" role="form" method="post" action="">
 
@@ -14,11 +14,9 @@
     <div class="col-lg-4 col-sm-4">
 
       {{ wtf.form_field(form.name) }}
-      {{ wtf.form_field(form.start_date) }}
-      {{ wtf.form_field(form.end_date) }}
-      {{ wtf.form_field(form.tracks) }}
+      {{ wtf.form_field(form.short_name) }}
 
-      <button class="btn btn-success" type="submit">Create Event</button>
+      <button class="btn btn-success" type="submit">Create Track</button>
     </div>
   </form>
 </div>
