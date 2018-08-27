@@ -2,7 +2,7 @@
 {% block content %}
 
   <h1 class="page-header">Users</h1>
-  <p><a href="{{ url_for('admin.create_user') }}" class="btn btn-md btn-success">Create User</a></p>
+  <p><a href="{{ url_for('admin_user.create') }}" class="btn btn-md btn-success">Create User</a></p>
   <h2 class="sub-header">Current Users</h2>
   <div class="table-responsive">
     <table class="table table-striped">
@@ -23,8 +23,8 @@
           <td>{{ user.registered_on }}</td>
           <td>{{ user.admin }}</td>
           <td>
-            <a href="{{ url_for('admin.update_user', user_id = user.id) }}" class="btn btn-xs btn-info"><span class="glyphicon glyphicon-edit"></span></a>
-            <a href="{{ url_for('admin.delete_user', user_id = user.id) }}" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-remove"></span></a>
+            <a href="{{ url_for('admin_user.update', user_id = user.id) }}" class="btn btn-xs btn-info"><span class="glyphicon glyphicon-edit"></span></a>
+            <a href="{{ url_for('admin_user.delete', user_id = user.id) }}" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-remove"></span></a>
           </td>
         </tr>
       {% endfor %}

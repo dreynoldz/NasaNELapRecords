@@ -47,9 +47,15 @@ def create_app(script_info=None):
     from project.server.user.views import user_blueprint
     from project.server.main.views import main_blueprint
     from project.server.admin.views import admin_blueprint
+    from project.server.admin.track.views import admin_track_blueprint
+    from project.server.admin.event.views import admin_event_blueprint
+    from project.server.admin.user.views import admin_user_blueprint
     app.register_blueprint(user_blueprint)
     app.register_blueprint(main_blueprint)
     app.register_blueprint(admin_blueprint)
+    app.register_blueprint(admin_track_blueprint)
+    app.register_blueprint(admin_event_blueprint)
+    app.register_blueprint(admin_user_blueprint)
 
     # flask login
     from project.server.models import User
