@@ -82,3 +82,16 @@ class Event(db.Model):
     
     def __repr__(self):
         return '<Event {0}>'.format(self.name)
+
+class Sponsor(db.Model):
+
+    __tablename__ = 'sponsors'
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String(255))
+
+    def __init__(self, name):
+        self.name = name
+    
+    def __repr__(self):
+        return '<Sponsor {0}>'.format(self.name)

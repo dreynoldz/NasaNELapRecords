@@ -7,7 +7,7 @@ import coverage
 from flask.cli import FlaskGroup
 
 from project.server import create_app, db
-from project.server.models import User, Track, Event
+from project.server.models import User, Track, Event, Sponsor
 from datetime import date
 
 
@@ -55,6 +55,8 @@ def create_data():
     e1 = Event(name='Summer Sizzle 2018', start_date = date(2018, 8, 27), end_date=date(2018, 8, 28))
     e2 = Event(name='MPACT', start_date = date(2018, 8, 11), end_date=date(2018, 8, 11))
     e3 = Event(name='Thunder at the Glen', start_date = date(2018, 9, 28), end_date=date(2018, 9, 30))
+
+    s1 = Sponsor(name='AVB Design')
     
 
     e1.tracks.append(t1)
@@ -62,6 +64,7 @@ def create_data():
     e3.tracks.append(t1)
     db.session.add_all([t1,t2])
     db.session.add_all([e1, e2, e3])
+    db.session.add(s1)
     db.session.commit()
     print(e1.name)
     print(e1.tracks)
