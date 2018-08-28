@@ -1,14 +1,14 @@
 {% extends "_baseDashboard.html" %}
 {% block content %}
 
-  <h1 class="page-header">Events</h1>
+  <h1 class="page-header">Event</h1>
   <p><a href="{{ url_for('admin_event.create') }}" class="btn btn-md btn-success">Create Event</a></p>
   <h2 class="sub-header">Current Events</h2>
   <div class="table-responsive">
     <table class="table table-striped">
       <thead>
         <tr>
-          <th>ID</th>
+          <th>#</th>
           <th>Name</th>
           <th>Start Date</th>
           <th>End Date</th>

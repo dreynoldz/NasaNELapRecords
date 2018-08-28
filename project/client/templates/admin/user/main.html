@@ -1,14 +1,14 @@
 {% extends "_baseDashboard.html" %}
 {% block content %}
 
-  <h1 class="page-header">Users</h1>
+  <h1 class="page-header">User</h1>
   <p><a href="{{ url_for('admin_user.create') }}" class="btn btn-md btn-success">Create User</a></p>
   <h2 class="sub-header">Current Users</h2>
   <div class="table-responsive">
     <table class="table table-striped">
       <thead>
         <tr>
-          <th>ID</th>
+          <th>#</th>
           <th>Email</th>
           <th>Registerd Date</th>
           <th>Admin</th>
