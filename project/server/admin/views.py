@@ -11,7 +11,8 @@ from project.server import bcrypt, db
 admin_blueprint = Blueprint('admin', __name__,)
 
 # Helper Functions
-
+def get_pghead():
+    return 'Overview'
 
 
 # Route Handlers
@@ -20,7 +21,7 @@ admin_blueprint = Blueprint('admin', __name__,)
 @login_required
 def overview():
     if current_user.is_admin():
-        return render_template('admin/overview.html')
+        return render_template('admin/overview.html', pghead=get_pghead())
     else:
         flash('You are not an admin!', 'danger')
         return redirect(url_for("user.members"))

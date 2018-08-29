@@ -1,0 +1,33 @@
+{% extends "_baseDashboard.html" %}
+{% block content %}
+
+  <p><a href="{{ url_for('admin_raceclass.create') }}" class="btn btn-md btn-success">Create RaceClass</a></p>
+  <h2 class="sub-header">Current RaceClass</h2>
+  <div class="table-responsive">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Name</th>
+          <th>Short Name</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for raceclass in raceclasses %}
+        <tr>
+          <td>{{ raceclass.id }}</td>
+          <td>{{ raceclass.name }}</td>
+          <td>{{ raceclass.short_name }}</td>
+          <td>
+            <a href="{{ url_for('admin_raceclass.update', raceclass_id = raceclass.id) }}" class="btn btn-xs btn-info"><span class="glyphicon glyphicon-edit"></span></a>
+            <a href="{{ url_for('admin_raceclass.delete', raceclass_id = raceclass.id) }}" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-remove"></span></a>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+
+{% endblock %}

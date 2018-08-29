@@ -16,6 +16,8 @@ admin_sponsor_blueprint = Blueprint('admin_sponsor', __name__,)
 def get_sponsors():
     return db.session.query(Sponsor)
 
+def get_pghead():
+    return 'Sponsors'
 # Route Handlers
 
 # Track
@@ -23,7 +25,7 @@ def get_sponsors():
 @login_required
 def main():
     if current_user.is_admin():
-        return render_template('admin/sponsor/main.html', sponsors=get_sponsors())
+        return render_template('admin/sponsor/main.html', sponsors=get_sponsors(), pghead=get_pghead())
     else:
         flash('You are not an admin!', 'danger')
         return redirect(url_for("user.members"))
@@ -42,8 +44,8 @@ def create():
             db.session.commit()
 
             flash('New sponsor created.', 'success')
-            return redirect(url_for("admin_sponsor.main"))
-        return render_template('admin/sponsor/create.html', form=form)
+            return redirect(url_for("admin_sponsor.main", pghead=get_pghead()))
+        return render_template('admin/sponsor/create.html', form=form, pghead=get_pghead())
     else:
         flash('You are not an admin!', 'danger') 
         return redirect(url_for("user.members"))
@@ -61,25 +63,25 @@ def update(sponsor_id):
             db.session.commit()
 
             flash('Sponsor Updated.', 'success')
-            return redirect(url_for("admin_sponsor.main"))
+            return redirect(url_for("admin_sponsor.main", pghead=get_pghead()))
         
         if sponsor:
             form.name.data = sponsor.name
 
-        return render_template('admin/sponsor/update.html', sponsor=sponsor, form=form)
+        return render_template('admin/sponsor/update.html', sponsor=sponsor, form=form, pghead=get_pghead())
     else:
         flash('You are not an admin!', 'danger')
         return redirect(url_for("user.members"))
 
 @admin_sponsor_blueprint.route('/sponsor/delete/<int:sponsor_id>/')
 @login_required
-def delete(sponsork_id):
+def delete(sponsor_id):
     if current_user.is_admin():
         sponsor = db.session.query(Sponsor).filter_by(id=sponsor_id)
         sponsor.delete()
         db.session.commit()
         flash('The sponsor was deleted.', 'success')
-        return redirect(url_for('admin_sponsor.main'))
+        return redirect(url_for('admin_sponsor.main', pghead=get_pghead()))
     else:
         flash('You are not an admin!', 'danger')
         return redirect(url_for("user.members"))

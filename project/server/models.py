@@ -95,3 +95,18 @@ class Sponsor(db.Model):
     
     def __repr__(self):
         return '<Sponsor {0}>'.format(self.name)
+
+class RaceClass(db.Model):
+
+    __tablename__ = 'raceclasses'
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String(255), nullable=False)
+    short_name = db.Column(db.String(255), nullable=False)
+
+    def __init__(self, name, short_name):
+        self.name = name
+        self.short_name = short_name
+    
+    def __repr__(self):
+        return '<RaceClass {0}>'.format(self.name)

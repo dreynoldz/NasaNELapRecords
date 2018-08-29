@@ -3,7 +3,7 @@
 
 {% block content %}
 
-  <h2 class="sub-header">Update: {{ sponsor.name }}</h2>
+  <h2 class="sub-header">Update: {{ raceclass.name }}</h2>
   <div class="table-responsive">
     <form class="form" role="form" method="post" action="">
 
@@ -15,6 +15,7 @@
       <div class="col-lg-4 col-sm-4">
 
           {{ wtf.form_field(form.name) }}
+          {{ wtf.form_field(form.short_name) }}
 
         <button class="btn btn-success" type="submit">Update</button>
       </div>

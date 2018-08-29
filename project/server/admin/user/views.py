@@ -1,4 +1,4 @@
-# project/server/admin/views.py
+# project/server/admin/user/views.py
 
 import sys
 from flask import render_template, Blueprint, url_for, \
@@ -17,6 +17,9 @@ admin_user_blueprint = Blueprint('admin_user', __name__,)
 def get_users():
     return db.session.query(User)
 
+def get_pghead():
+    return 'Users'
+
 # Route Handlers
 
 #Users
@@ -24,7 +27,7 @@ def get_users():
 @login_required
 def main():
     if current_user.is_admin():
-        return render_template('admin/user/main.html', users=get_users())
+        return render_template('admin/user/main.html', users=get_users(), pghead=get_pghead())
     else:
         flash('You are not an admin!', 'danger')
         return redirect(url_for("user.members"))
@@ -44,8 +47,8 @@ def create():
             db.session.commit()
 
             flash('New user created.', 'success')
-            return redirect(url_for("admin_user.main"))
-        return render_template('admin/user/create.html', form=form)
+            return redirect(url_for("admin_user.main", pghead=get_pghead()))
+        return render_template('admin/user/create.html', form=form, pghead=get_pghead())
     else:
         flash('You are not an admin!', 'danger') 
         return redirect(url_for("user.members"))
@@ -66,12 +69,12 @@ def update(user_id):
 
             db.session.commit()
             flash('User updated!.', 'success')
-            return redirect(url_for("admin_user.main"))
+            return redirect(url_for("admin_user.main", pghead=get_pghead()))
         
         if user:
             form.admin.data = user.admin
 
-        return render_template('admin/user/update.html', user=user, form=form)
+        return render_template('admin/user/update.html', user=user, form=form, pghead=get_pghead())
     else:
         flash('You are not an admin!', 'danger')
         return redirect(url_for("user.members"))
@@ -84,7 +87,7 @@ def delete(user_id):
         user.delete()
         db.session.commit()
         flash('The user was deleted.', 'success')
-        return redirect(url_for('admin_user.main'))
+        return redirect(url_for('admin_user.main', pghead=get_pghead()))
     else:
         flash('You are not an admin!', 'danger')
-        return redirect(url_for("user.members"))
+        return redirect(url_for("user.members", pghead=get_pghead()))

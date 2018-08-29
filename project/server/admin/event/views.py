@@ -35,6 +35,8 @@ def remove_track_association(event_id):
         track = db.session.query(Track).filter_by(id=trackEvent.trackId).first()
         e.tracks.remove(track)
 
+def get_pghead():
+    return 'Events'
 
 # Route Handlers
 
@@ -43,7 +45,7 @@ def remove_track_association(event_id):
 @login_required
 def main():
     if current_user.is_admin():
-        return render_template('admin/event/main.html', events=get_events())
+        return render_template('admin/event/main.html', events=get_events(), pghead=get_pghead())
     else:
         flash('You are not an admin!', 'danger')
         return redirect(url_for("user.members"))
@@ -69,8 +71,8 @@ def create():
             db.session.commit()
 
             flash('New event created.', 'success')
-            return redirect(url_for("admin_event.main"))
-        return render_template('admin/event/create.html', form=form)
+            return redirect(url_for("admin_event.main", pghead=get_pghead()))
+        return render_template('admin/event/create.html', form=form, pghead=get_pghead())
     else:
         flash('You are not an admin!', 'danger') 
         return redirect(url_for("user.members"))
@@ -97,14 +99,14 @@ def update(event_id):
             db.session.commit()
 
             flash('Event Updated.', 'success')
-            return redirect(url_for("admin_event.main"))
+            return redirect(url_for("admin_event.main", pghead=get_pghead()))
         
         if event:
             form.name.data = event.name
             form.start_date.data = event.start_date
             form.end_date.data = event.end_date
 
-        return render_template('admin/event/update.html', event=event, form=form)
+        return render_template('admin/event/update.html', event=event, form=form, pghead=get_pghead())
     else:
         flash('You are not an admin!', 'danger')
         return redirect(url_for("user.members"))
@@ -118,7 +120,7 @@ def delete(event_id):
         event.delete()
         db.session.commit()
         flash('The event was deleted.', 'success')
-        return redirect(url_for('admin_event.main'))
+        return redirect(url_for('admin_event.main', pghead=get_pghead()))
     else:
         flash('You are not an admin!', 'danger')
         return redirect(url_for("user.members"))
