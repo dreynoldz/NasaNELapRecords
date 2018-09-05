@@ -7,7 +7,7 @@ import coverage
 from flask.cli import FlaskGroup
 
 from project.server import create_app, db
-from project.server.models import User, Track, Event, Sponsor, RaceClass
+from project.server.models import User, Track, Event, Sponsor, RaceClass, Car, Racer
 from datetime import date
 
 
@@ -58,19 +58,26 @@ def create_data():
 
     s1 = Sponsor(name='AVB Design')
     rc1 = RaceClass(name='Honda Challenge 1', short_name='Honda Chal 1')
+    c1 = Car(make='Volkswagen', model='Cabriolet', year='1992', color='Inca Blue', number='724')
+    r1 = Racer(email='Aaron@van-blar.com', name='AVB', city='Bayonne', state='NJ', points=100)
     
 
     e1.tracks.append(t1)
     e2.tracks.append(t2)
     e3.tracks.append(t1)
+    r1.cars.append(c1)
+    r1.sponsors.append(s1)
     db.session.add_all([t1,t2])
     db.session.add_all([e1, e2, e3])
     db.session.add(s1)
     db.session.add(rc1)
+    db.session.add(c1)
+    db.session.add(r1)
     db.session.commit()
     print(e1.name)
     print(e1.tracks)
     print(e2.tracks)
+    print(r1.cars)
     #pass
 
 

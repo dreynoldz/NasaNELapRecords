@@ -1,0 +1,39 @@
+{% extends "_baseDashboard.html" %}
+{% block content %}
+
+  <p><a href="{{ url_for('admin_car.create') }}" class="btn btn-md btn-success">Create Car</a></p>
+  <h2 class="sub-header">Current Car</h2>
+  <div class="table-responsive">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Make</th>
+          <th>Model</th>
+          <th>Year</th>
+          <th>Color</th>
+          <th>Number</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for car in cars %}
+        <tr>
+          <td>{{ car.id }}</td>
+          <td>{{ car.make }}</td>
+          <td>{{ car.model }}</td>
+          <td>{{ car.year }}</td>
+          <td>{{ car.color }}</td>
+          <td>{{ car.number }}</td>
+          <td>
+            <a href="{{ url_for('admin_car.update', car_id = car.id) }}" class="btn btn-xs btn-info"><span class="glyphicon glyphicon-edit"></span></a>
+            <a href="{{ url_for('admin_car.delete', car_id = car.id) }}" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-remove"></span></a>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+
+{% endblock %}

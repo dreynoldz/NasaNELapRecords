@@ -6,7 +6,7 @@ from flask import render_template, Blueprint, url_for, \
 from flask_login import login_required, current_user
 
 from project.server import bcrypt, db
-from project.server.models import User
+from project.server.models import User, Racer
 from project.server.admin.forms import CreateUserForm, UpdateUserForm, \
     passwordResetForm
 
@@ -16,6 +16,17 @@ admin_user_blueprint = Blueprint('admin_user', __name__,)
 # Helper Functions
 def get_users():
     return db.session.query(User)
+
+def get_availableRacers(email):
+    if email == 'NONE':
+        availRacers = db.session.query(Racer).filter_by(user_id=NULL)
+        availracers_list = [(a.id, a.a.email) for a in availRacers.order_by(Racer.email).all()]
+        return availracers_list
+    else:
+        availRacers = db.session.query(Racer).filter_by(email=email).first()
+        availracers_list = [(a.id, a.a.email) for a in availRacers.order_by(Racer.email).all()]
+        return availracers_list
+
 
 def get_pghead():
     return 'Users'

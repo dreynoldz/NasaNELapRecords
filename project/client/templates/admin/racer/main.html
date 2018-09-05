@@ -1,0 +1,57 @@
+{% extends "_baseDashboard.html" %}
+{% block content %}
+
+  <p><a href="{{ url_for('admin_racer.create') }}" class="btn btn-md btn-success">Create Event</a></p>
+  <h2 class="sub-header">Current Events</h2>
+  <div class="table-responsive">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Email</th>
+          <th>Name</th>
+          <th>City</th>
+          <th>State</th>
+          <th>Points</th>
+          <th>Cars</th>
+          <th>Sponsors</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for racer in racers %}
+        <tr>
+          <td>{{ racer.id }}</td>
+          <td>{{ racer.email }}</td>
+          <td>{{ racer.name }}</td>
+          <td>{{ racer.city }}</td>
+          <td>{{ racer.state }}</td>
+          <td>{{ racer.points }}</td>
+          <td>
+            {% for car in racer.cars %} 
+              {{ car.number }}:{{ car.make }} {{ car.model }}
+              {% if not loop.last %}
+                ,
+              {% endif %}
+            {% endfor %}
+          </td>   
+          <td>
+            {% for sponsor in racer.sponsors %} 
+              {{ sponsor.name }}
+              {% if not loop.last %}
+                ,
+              {% endif %}
+            {% endfor %}
+          </td>
+          <td>
+            <a href="{{ url_for('admin_racer.update', racer_id = racer.id) }}" class="btn btn-xs btn-info"><span class="glyphicon glyphicon-edit"></span></a>
+            <a href="{{ url_for('admin_racer.delete', racer_id = racer.id) }}" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-remove"></span></a>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+
+{% endblock %}
