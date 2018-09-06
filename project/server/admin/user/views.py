@@ -20,11 +20,11 @@ def get_users():
 def get_availableRacers(email):
     if email == 'NONE':
         availRacers = db.session.query(Racer).filter_by(user_id=NULL)
-        availracers_list = [(a.id, a.a.email) for a in availRacers.order_by(Racer.email).all()]
+        availracers_list = [(a.id, a.email) for a in availRacers.order_by(Racer.email).all()]
         return availracers_list
     else:
-        availRacers = db.session.query(Racer).filter_by(email=email).first()
-        availracers_list = [(a.id, a.a.email) for a in availRacers.order_by(Racer.email).all()]
+        availRacer = db.session.query(Racer).filter_by(email=email).first()
+        availracers_list = [(availRacer.id, availRacer.email)]
         return availracers_list
 
 
@@ -48,12 +48,17 @@ def main():
 def create():
     if current_user.is_admin():
         form = CreateUserForm(request.form)
+        form.racer.choices = get_availableRacers('NONE')
+
         if form.validate_on_submit():
             user = User(
                 email=form.email.data,
                 password=form.password.data,
                 admin=form.admin.data
             )
+            racer = db.session.query(Racer).filter_by(id=form.racer.data).first()
+            user.racer.append(racer)
+
             db.session.add(user)
             db.session.commit()
 
@@ -70,6 +75,7 @@ def update(user_id):
     if current_user.is_admin():
         form = UpdateUserForm(request.form)
         user = User.query.filter_by(id=user_id).first()
+        form.racer.choices = get_availableRacers(user.email)
         
 
         if form.validate_on_submit():
@@ -77,6 +83,9 @@ def update(user_id):
                 user.admin=1
             else:
                 user.admin=0
+            user.racer.clear()
+            racer = db.session.query(Racer).filter_by(id=form.racer.data).first()
+            user.racer.append(racer)
 
             db.session.commit()
             flash('User updated!.', 'success')

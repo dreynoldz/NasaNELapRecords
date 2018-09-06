@@ -2,7 +2,7 @@
 
 
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField
+from wtforms import StringField, PasswordField, BooleanField,SelectField
 from wtforms.validators import DataRequired, Email, Length, EqualTo
 
 class CreateUserForm(FlaskForm):
@@ -26,9 +26,11 @@ class CreateUserForm(FlaskForm):
         ]
     )
     admin = BooleanField('Admin')
+    racer = SelectField('Racer', choices=[], coerce=int)
 
 class UpdateUserForm(FlaskForm):
     admin = BooleanField('Admin')
+    racer = SelectField('Racer', choices=[], coerce=int)
 
 class passwordResetForm(FlaskForm):
     email = StringField(
