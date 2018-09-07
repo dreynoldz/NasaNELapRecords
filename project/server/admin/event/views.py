@@ -1,4 +1,4 @@
-# project/server/admin/views.py
+# project/server/admin/event/views.py
 
 import sys
 from flask import render_template, Blueprint, url_for, \
@@ -7,8 +7,7 @@ from flask_login import login_required, current_user
 
 from project.server import bcrypt, db
 from project.server.models import Event, Track, TrackEvent
-from project.server.admin.forms import CreateUserForm, UpdateUserForm, \
-    passwordResetForm, EventForm, TrackForm
+from project.server.admin.forms import EventForm, TrackForm
 
 # Blueprints
 admin_event_blueprint = Blueprint('admin_event', __name__,)
@@ -24,7 +23,8 @@ def get_tracks():
 
 def get_trackChoices():
     tracks = get_tracks()
-    track_list = [(t.id, t.name) for t in tracks.order_by(Track.name).all()]
+    track_list = [(0, "---")]
+    [track_list.append((t.id, t.name)) for t in tracks.order_by(Track.name).all()]
     return track_list
 
 def remove_track_association(event_id):
@@ -64,8 +64,9 @@ def create():
                 end_date=form.end_date.data
             )
             for t in form.tracks.data:
-                track = db.session.query(Track).filter_by(id=t).first()
-                event.tracks.append(track)
+                if t != 0:
+                    track = db.session.query(Track).filter_by(id=t).first()
+                    event.tracks.append(track)
 
             db.session.add(event)
             db.session.commit()
@@ -89,12 +90,14 @@ def update(event_id):
             event.name = form.name.data
             event.start_date = form.start_date.data
             event.end_date = form.end_date.data
-            remove_track_association(event_id)
-            tracks=[]
 
             for t in form.tracks.data:
-                track = db.session.query(Track).filter_by(id=t).first()
-                event.tracks.append(track)
+                if t == 0:
+                    remove_track_association(event_id)
+                    tracks=[]
+                else:
+                    track = db.session.query(Track).filter_by(id=t).first()
+                    event.tracks.append(track)
             
             db.session.commit()
 

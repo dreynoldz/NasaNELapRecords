@@ -26,12 +26,18 @@ def get_sponsors():
 
 def get_carChoices():
     cars = get_cars()
-    car_list = [(c.id, c.number + ' ' + c.make + ' ' + c.model) for c in cars.order_by(Car.number).all()]
+    car_list = [(0, "---")]
+    [car_list.append((c.id, c.number + ' ' + c.make + ' ' + c.model)) for c in cars.order_by(Car.number).all()]
+    print("car_list")
+    print(car_list)
     return car_list
 
 def get_sponsorChoices():
     sponsors = get_sponsors()
-    sponsor_list = [(s.id, s.name) for s in sponsors.order_by(Sponsor.name).all()]
+    sponsor_list = [(0, "---")]
+    [sponsor_list.append((s.id, s.name)) for s in sponsors.order_by(Sponsor.name).all()]
+    print("sponsor_list")
+    print(sponsor_list)
     return sponsor_list
 
 def remove_car_association(racer_id):
@@ -82,12 +88,14 @@ def create():
                 points=form.points.data,
             )
             for c in form.cars.data:
-                car = db.session.query(Car).filter_by(id=c).first()
-                racer.cars.append(car)
+                if c != 0:
+                    car = db.session.query(Car).filter_by(id=c).first()
+                    racer.cars.append(car)
             
             for s in form.sponsors.data:
-                sponsor = db.session.query(Sponsor).filter_by(id=s).first()
-                racer.sponsors.append(sponsor)
+                if s != 0:
+                    sponsor = db.session.query(Sponsor).filter_by(id=s).first()
+                    racer.sponsors.append(sponsor)
 
             db.session.add(racer)
             db.session.commit()
@@ -114,18 +122,22 @@ def update(racer_id):
             racer.city = form.city.data
             racer.state = form.state.data
             racer.points = form.points.data
-            remove_car_association(racer_id)
-            remove_sponsor_association(racer_id)
-            cars=[]
-            sponsors=[]
 
             for c in form.cars.data:
-                car = db.session.query(Car).filter_by(id=c).first()
-                racer.cars.append(car)
+                if c != 0:
+                    car = db.session.query(Car).filter_by(id=c).first()
+                    racer.cars.append(car)
+                else:
+                    remove_car_association(racer_id)
+                    cars=[]
             
             for s in form.sponsors.data:
-                sponsor = db.session.query(Sponsor).filter_by(id=s).first()
-                racer.sponsors.append(sponsor)
+                if s != 0:
+                    sponsor = db.session.query(Sponsor).filter_by(id=s).first()
+                    racer.sponsors.append(sponsor)
+                else:
+                    remove_sponsor_association(racer_id)
+                    sponsors=[]
                  
             db.session.commit()
 

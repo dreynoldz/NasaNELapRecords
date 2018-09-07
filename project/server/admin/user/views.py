@@ -18,18 +18,24 @@ def get_users():
     return db.session.query(User)
 
 def get_availableRacers(email):
+    availracers_list = [(0, "---")]
+    print(availracers_list)
     if email == 'NONE':
-        availRacers = db.session.query(Racer).filter_by(user_id is None)
-        availracers_list = [(a.id, a.email) for a in availRacers.order_by(Racer.email).all()]
+        availRacers = db.session.query(Racer).filter(Racer.user_id == None)
+        print(availRacers)
+        [availracers_list.append((a.id, a.name)) for a in availRacers.order_by(Racer.name).all()]
+        print(availracers_list)
         return availracers_list
     else:
-        availRacer = db.session.query(Racer).filter_by(email=email).first()
+        availRacer = db.session.query(Racer).filter(Racer.email == email).first()
         if availRacer:
-            availracers_list = [(availRacer.id, availRacer.email)]
+            [availracers_list.append((availRacer.id, availRacer.name))]
+            print(availracers_list)
             return availracers_list
         else:
-            availRacers = db.session.query(Racer).filter(Racer.user_id is None)
-            availracers_list = [(a.id, a.email) for a in availRacers.order_by(Racer.email).all()]
+            availRacers = db.session.query(Racer).filter(Racer.user_id == None)
+            [availracers_list.append((a.id, a.name)) for a in availRacers.order_by(Racer.name).all()]
+            print(availracers_list)
             return availracers_list
 
 
@@ -61,8 +67,9 @@ def create():
                 password=form.password.data,
                 admin=form.admin.data
             )
-            racer = db.session.query(Racer).filter_by(id=form.racer.data).first()
-            user.racer.append(racer)
+            if form.racer.data != 0:
+                racer = db.session.query(Racer).filter_by(id=form.racer.data).first()
+                user.racer.append(racer)
 
             db.session.add(user)
             db.session.commit()
@@ -88,9 +95,12 @@ def update(user_id):
                 user.admin=1
             else:
                 user.admin=0
-            user.racer.clear()
-            racer = db.session.query(Racer).filter_by(id=form.racer.data).first()
-            user.racer.append(racer)
+
+            if form.racer.data != 0:
+                racer = db.session.query(Racer).filter(Racer.id == form.racer.data).first()
+                user.racer = racer
+            else:
+                user.racer = None
 
             db.session.commit()
             flash('User updated!.', 'success')
@@ -98,6 +108,8 @@ def update(user_id):
         
         if user:
             form.admin.data = user.admin
+            if user.racer:
+                form.racer.data = user.racer.id
 
         return render_template('admin/user/update.html', user=user, form=form, pghead=get_pghead())
     else:
@@ -109,6 +121,8 @@ def update(user_id):
 def delete(user_id):
     if current_user.is_admin():
         user = db.session.query(User).filter_by(id=user_id)
+        u = user.first()
+        u.racer = None
         user.delete()
         db.session.commit()
         flash('The user was deleted.', 'success')
