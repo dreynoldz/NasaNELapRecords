@@ -7,7 +7,7 @@ from flask_login import login_required, current_user
 
 from project.server import bcrypt, db
 from project.server.models import User, Racer
-from project.server.admin.forms import CreateUserForm, UpdateUserForm, \
+from project.server.admin.user.forms import CreateUserForm, UpdateUserForm, \
     passwordResetForm
 
 # Blueprints
@@ -19,13 +19,18 @@ def get_users():
 
 def get_availableRacers(email):
     if email == 'NONE':
-        availRacers = db.session.query(Racer).filter_by(user_id=NULL)
+        availRacers = db.session.query(Racer).filter_by(user_id is None)
         availracers_list = [(a.id, a.email) for a in availRacers.order_by(Racer.email).all()]
         return availracers_list
     else:
         availRacer = db.session.query(Racer).filter_by(email=email).first()
-        availracers_list = [(availRacer.id, availRacer.email)]
-        return availracers_list
+        if availRacer:
+            availracers_list = [(availRacer.id, availRacer.email)]
+            return availracers_list
+        else:
+            availRacers = db.session.query(Racer).filter(Racer.user_id is None)
+            availracers_list = [(a.id, a.email) for a in availRacers.order_by(Racer.email).all()]
+            return availracers_list
 
 
 def get_pghead():

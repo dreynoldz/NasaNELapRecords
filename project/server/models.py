@@ -31,7 +31,7 @@ class User(db.Model):
     password = db.Column(db.String(255), nullable=False)
     registered_on = db.Column(db.DateTime, nullable=False)
     admin = db.Column(db.Boolean, nullable=False, default=False)
-    racer = db.relationship("Racer", back_populates='user')
+    racer = db.relationship("Racer", uselist=False, backref='user')
 
 
     def __init__(self, email, password, admin=False):
@@ -151,8 +151,7 @@ class Racer(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     email = db.Column(db.String(255), unique=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    user = db.relationship("User", uselist=False, back_populates="racer")
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
     name = db.Column(db.String(255), nullable=False)
     city = db.Column(db.String(255))
     state = db.Column(db.String(255))
