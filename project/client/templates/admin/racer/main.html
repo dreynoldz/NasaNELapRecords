@@ -15,6 +15,8 @@
           <th>Points</th>
           <th>Cars</th>
           <th>Sponsors</th>
+          <th>Created</th>
+          <th>Updated</th>
           <th>Actions</th>
         </tr>
       </thead>
@@ -43,6 +45,16 @@
               {% endif %}
             {% endfor %}
           </td>
+          {% if racer.created_date%}
+              <td>{{ racer.created_date|datetime_filter }}</td>
+          {% else %}
+              <td></td>
+          {% endif %}
+          {% if racer.updated_date %}
+              <td>{{ racer.updated_date|datetime_filter }}</td>
+          {% else %}
+              <td></td>
+          {% endif %}
           <td>
             <a href="{{ url_for('admin_racer.update', racer_id = racer.id) }}" class="btn btn-xs btn-info"><span class="glyphicon glyphicon-edit"></span></a>
             <a href="{{ url_for('admin_racer.delete', racer_id = racer.id) }}" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-remove"></span></a>

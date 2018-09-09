@@ -12,6 +12,8 @@
           <th>Start Date</th>
           <th>End Date</th>
           <th>Tracks</th>
+          <th>Created</th>
+          <th>Updated</th>
           <th>Actions</th>
         </tr>
       </thead>
@@ -28,7 +30,18 @@
               {% if not loop.last %}
                 ,
               {% endif %}
-            {% endfor %}</td> 
+            {% endfor %}
+          </td>
+            {% if event.created_date%}
+              <td>{{ event.created_date|datetime_filter }}</td>
+            {% else %}
+              <td></td>
+            {% endif %}
+            {% if event.updated_date %}
+              <td>{{ event.updated_date|datetime_filter }}</td>
+            {% else %}
+              <td></td>
+            {% endif %}
           <td>
             <a href="{{ url_for('admin_event.update', event_id = event.id) }}" class="btn btn-xs btn-info"><span class="glyphicon glyphicon-edit"></span></a>
             <a href="{{ url_for('admin_event.delete', event_id = event.id) }}" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-remove"></span></a>

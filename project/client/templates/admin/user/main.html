@@ -12,6 +12,8 @@
           <th>Registerd Date</th>
           <th>Racer</th>
           <th>Admin</th>
+          <th>Last Login</th>
+          <th>Updated</th>
           <th>Actions</th>
         </tr>
       </thead>
@@ -23,6 +25,16 @@
           <td>{{ user.registered_on }}</td>
           <td>{{ user.racer.name }}</td>
           <td>{{ user.admin }}</td>
+          {% if user.last_login%}
+              <td>{{ user.last_login|datetime_filter }}</td>
+          {% else %}
+              <td></td>
+          {% endif %}
+          {% if user.updated_date %}
+              <td>{{ user.updated_date|datetime_filter }}</td>
+          {% else %}
+              <td></td>
+          {% endif %}
           <td>
             <a href="{{ url_for('admin_user.update', user_id = user.id) }}" class="btn btn-xs btn-info"><span class="glyphicon glyphicon-edit"></span></a>
             <a href="{{ url_for('admin_user.delete', user_id = user.id) }}" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-remove"></span></a>

@@ -10,6 +10,8 @@
           <th>#</th>
           <th>Name</th>
           <th>Short Name</th>
+          <th>Created</th>
+          <th>Updated</th>
           <th>Actions</th>
         </tr>
       </thead>
@@ -19,6 +21,16 @@
           <td>{{ track.id }}</td>
           <td>{{ track.name }}</td>
           <td>{{ track.short_name }}</td>
+          {% if track.created_date%}
+              <td>{{ track.created_date|datetime_filter }}</td>
+          {% else %}
+              <td></td>
+          {% endif %}
+          {% if track.updated_date %}
+              <td>{{ track.updated_date|datetime_filter }}</td>
+          {% else %}
+              <td></td>
+          {% endif %}
           <td>
             <a href="{{ url_for('admin_track.update', track_id = track.id) }}" class="btn btn-xs btn-info"><span class="glyphicon glyphicon-edit"></span></a>
             <a href="{{ url_for('admin_track.delete', track_id = track.id) }}" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-remove"></span></a>

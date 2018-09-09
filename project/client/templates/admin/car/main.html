@@ -13,6 +13,8 @@
           <th>Year</th>
           <th>Color</th>
           <th>Number</th>
+          <th>Created</th>
+          <th>Updated</th>
           <th>Actions</th>
         </tr>
       </thead>
@@ -25,6 +27,16 @@
           <td>{{ car.year }}</td>
           <td>{{ car.color }}</td>
           <td>{{ car.number }}</td>
+          {% if car.created_date%}
+            <td>{{ car.created_date|datetime_filter }}</td>
+          {% else %}
+            <td></td>
+          {% endif %}
+          {% if car.updated_date %}
+            <td>{{ car.updated_date|datetime_filter }}</td>
+          {% else %}
+            <td></td>
+          {% endif %}
           <td>
             <a href="{{ url_for('admin_car.update', car_id = car.id) }}" class="btn btn-xs btn-info"><span class="glyphicon glyphicon-edit"></span></a>
             <a href="{{ url_for('admin_car.delete', car_id = car.id) }}" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-remove"></span></a>

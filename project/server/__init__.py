@@ -1,7 +1,7 @@
 # project/server/__init__.py
 
 
-import os
+import os, datetime
 
 from flask import Flask, render_template
 from flask_login import LoginManager
@@ -64,6 +64,11 @@ def create_app(script_info=None):
     app.register_blueprint(admin_raceclass_blueprint)
     app.register_blueprint(admin_car_blueprint)
     app.register_blueprint(admin_racer_blueprint)
+
+    # create custom filter
+    @app.template_filter()
+    def datetime_filter(dttm):
+        return dttm.strftime("%Y-%m-%d %H:%M:%S")
 
     # flask login
     from project.server.models import User

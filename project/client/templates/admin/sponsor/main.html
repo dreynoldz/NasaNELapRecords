@@ -9,6 +9,8 @@
         <tr>
           <th>#</th>
           <th>Name</th>
+          <th>Created</th>
+          <th>Updated</th>
           <th>Actions</th>
         </tr>
       </thead>
@@ -17,6 +19,16 @@
         <tr>
           <td>{{ sponsor.id }}</td>
           <td>{{ sponsor.name }}</td>
+          {% if sponsor.created_date%}
+              <td>{{ sponsor.created_date|datetime_filter }}</td>
+          {% else %}
+              <td></td>
+          {% endif %}
+          {% if sponsor.updated_date %}
+              <td>{{ sponsor.updated_date|datetime_filter }}</td>
+          {% else %}
+              <td></td>
+          {% endif %}
           <td>
             <a href="{{ url_for('admin_sponsor.update', sponsor_id = sponsor.id) }}" class="btn btn-xs btn-info"><span class="glyphicon glyphicon-edit"></span></a>
             <a href="{{ url_for('admin_sponsor.delete', sponsor_id = sponsor.id) }}" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-remove"></span></a>
