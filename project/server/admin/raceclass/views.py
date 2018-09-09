@@ -1,6 +1,6 @@
 # project/server/admin/raceclass/views.py
 
-import sys
+import sys, datetime
 from flask import render_template, Blueprint, url_for, \
     redirect, flash, request
 from flask_login import login_required, current_user
@@ -61,6 +61,7 @@ def update(raceclass_id):
         if form.validate_on_submit():
             raceclass.name = form.name.data
             raceclass.short_name = form.short_name.data
+            raceclass.updated_date = datetime.datetime.now()
             db.session.commit()
 
             flash('RaceClass Updated.', 'success')

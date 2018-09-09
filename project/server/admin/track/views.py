@@ -64,7 +64,7 @@ def update(track_id):
             print(form.short_name.data, file=sys.stderr)
             track.name = form.name.data
             track.short_name = form.short_name.data
-
+            track.updated_date = datetime.datetime.now()
             db.session.commit()
 
             flash('Track Updated.', 'success')

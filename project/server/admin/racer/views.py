@@ -1,6 +1,6 @@
 # project/server/admin/racer/views.py
 
-import sys
+import sys, datetime
 from flask import render_template, Blueprint, url_for, \
     redirect, flash, request
 from flask_login import login_required, current_user
@@ -138,7 +138,7 @@ def update(racer_id):
                 else:
                     remove_sponsor_association(racer_id)
                     sponsors=[]
-                 
+            racer.updated_date = datetime.datetime.now()
             db.session.commit()
 
             flash('Racer Updated.', 'success')

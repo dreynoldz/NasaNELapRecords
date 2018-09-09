@@ -1,6 +1,6 @@
 # project/server/admin/event/views.py
 
-import sys
+import sys, datetime
 from flask import render_template, Blueprint, url_for, \
     redirect, flash, request
 from flask_login import login_required, current_user
@@ -98,7 +98,7 @@ def update(event_id):
                 else:
                     track = db.session.query(Track).filter_by(id=t).first()
                     event.tracks.append(track)
-            
+            event.updated_date = datetime.datetime.now()
             db.session.commit()
 
             flash('Event Updated.', 'success')

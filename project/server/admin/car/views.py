@@ -1,6 +1,6 @@
 # project/server/admin/car/views.py
 
-import sys
+import sys, datetime
 from flask import render_template, Blueprint, url_for, \
     redirect, flash, request
 from flask_login import login_required, current_user
@@ -68,7 +68,7 @@ def update(car_id):
             car.year = form.year.data
             car.color = form.color.data
             car.number = form.number.data
-
+            car.updated_date = datetime.datetime.now()
             db.session.commit()
 
             flash('Car Updated.', 'success')

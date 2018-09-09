@@ -1,6 +1,6 @@
 # project/server/admin/sponsor/views.py
 
-import sys
+import sys, datetime
 from flask import render_template, Blueprint, url_for, \
     redirect, flash, request
 from flask_login import login_required, current_user
@@ -59,7 +59,7 @@ def update(sponsor_id):
 
         if form.validate_on_submit():
             sponsor.name = form.name.data
-
+            sponsor.updated_date = datetime.datetime.now()
             db.session.commit()
 
             flash('Sponsor Updated.', 'success')

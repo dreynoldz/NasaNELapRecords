@@ -1,6 +1,6 @@
 # project/server/admin/user/views.py
 
-import sys
+import sys, datetime
 from flask import render_template, Blueprint, url_for, \
     redirect, flash, request
 from flask_login import login_required, current_user
@@ -101,7 +101,7 @@ def update(user_id):
                 user.racer = racer
             else:
                 user.racer = None
-
+            user.updated_date = datetime.datetime.now()
             db.session.commit()
             flash('User updated!.', 'success')
             return redirect(url_for("admin_user.main", pghead=get_pghead()))

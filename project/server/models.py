@@ -30,8 +30,10 @@ class User(db.Model):
     email = db.Column(db.String(255), unique=True, nullable=False)
     password = db.Column(db.String(255), nullable=False)
     registered_on = db.Column(db.DateTime, nullable=False)
+    last_login = db.Column(db.DateTime, nullable=True)
     admin = db.Column(db.Boolean, nullable=False, default=False)
     racer = db.relationship("Racer", uselist=False, backref='user')
+    updated_date = db.Column(db.DateTime, nullable=True)
 
 
     def __init__(self, email, password, admin=False):
@@ -67,11 +69,14 @@ class Track(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(255), nullable=False)
     short_name = db.Column(db.String(255), nullable=False)
+    created_date = db.Column(db.DateTime, default=datetime.datetime.utcnow(), nullable=False)
+    updated_date = db.Column(db.DateTime, nullable=True)
     #lap_distance = db.Column(db.Float)
 
     def __init__(self, name, short_name):
         self.name = name
         self.short_name = short_name
+        self.created_date = datetime.datetime.now()
     
     def __repr__(self):
         return '<Track {0}>'.format(self.name)
@@ -85,11 +90,14 @@ class Event(db.Model):
     start_date = db.Column(db.Date, nullable=False)
     end_date = db.Column(db.Date, nullable=False)
     tracks = db.relationship('Track', secondary=TrackEvent, backref='events')
+    created_date = db.Column(db.DateTime, default=datetime.datetime.utcnow(), nullable=False)
+    updated_date = db.Column(db.DateTime, nullable=True)
 
     def __init__(self, name, start_date, end_date):
         self.name = name
         self.start_date = start_date
         self.end_date = end_date
+        self.created_date = datetime.datetime.now()
     
     def __repr__(self):
         return '<Event {0}>'.format(self.name)
@@ -100,9 +108,12 @@ class Sponsor(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(255))
+    created_date = db.Column(db.DateTime, default=datetime.datetime.utcnow(), nullable=False)
+    updated_date = db.Column(db.DateTime, nullable=True)
 
     def __init__(self, name):
         self.name = name
+        self.created_date = datetime.datetime.now()
     
     def __repr__(self):
         return '<Sponsor {0}>'.format(self.name)
@@ -114,10 +125,14 @@ class RaceClass(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(255), nullable=False)
     short_name = db.Column(db.String(255), nullable=False)
+    created_date = db.Column(db.DateTime, default=datetime.datetime.utcnow(), nullable=False)
+    updated_date = db.Column(db.DateTime, nullable=True)
 
     def __init__(self, name, short_name):
         self.name = name
         self.short_name = short_name
+        self.created_date = datetime.datetime.now()
+        
     
     def __repr__(self):
         return '<RaceClass {0}>'.format(self.name)
@@ -133,6 +148,8 @@ class Car(db.Model):
     color = db.Column(db.String(255), nullable=False)
     number = db.Column(db.String(255), nullable=False)
     racers = db.relationship('Racer', secondary=CarRacer, back_populates='cars')
+    created_date = db.Column(db.DateTime, default=datetime.datetime.utcnow(), nullable=False)
+    updated_date = db.Column(db.DateTime, nullable=True)
     #racer_id = db.Column(db.Integer, ForeignKey('racers.id'))
 
     def __init__(self, make=None, model=None, year=None, color=None, number=None):
@@ -141,6 +158,7 @@ class Car(db.Model):
         self.year = year
         self.color = color
         self.number = number
+        self.created_date = datetime.datetime.now()
     
     def __repr__(self):
         return "<Car(make='%s', model='%s', number='%s')>" % (self.make, self.model, self.number)
@@ -158,6 +176,8 @@ class Racer(db.Model):
     points = db.Column(db.Integer)
     cars = db.relationship('Car', secondary=CarRacer, back_populates='racers')
     sponsors = db.relationship('Sponsor', secondary=RacerSponsor, backref='racers')
+    created_date = db.Column(db.DateTime, default=datetime.datetime.utcnow(), nullable=False)
+    updated_date = db.Column(db.DateTime, nullable=True)
     #Picture
 
     def __init__(self, email, name, city, state, points):
@@ -166,6 +186,7 @@ class Racer(db.Model):
         self.city = city
         self.state = state
         self.points = points
+        self.created_date = datetime.datetime.now()
     
     def __repr__(self):
         return '<Racer {0}>'.format(self.name)
