@@ -19,23 +19,18 @@ def get_users():
 
 def get_availableRacers(email):
     availracers_list = [(0, "---")]
-    print(availracers_list)
     if email == 'NONE':
-        availRacers = db.session.query(Racer).filter(Racer.user_id == None)
-        print(availRacers)
+        availRacers = db.session.query(Racer).filter(Racer.user_id == None
         [availracers_list.append((a.id, a.name)) for a in availRacers.order_by(Racer.name).all()]
-        print(availracers_list)
         return availracers_list
     else:
         availRacer = db.session.query(Racer).filter(Racer.email == email).first()
         if availRacer:
             [availracers_list.append((availRacer.id, availRacer.name))]
-            print(availracers_list)
             return availracers_list
         else:
             availRacers = db.session.query(Racer).filter(Racer.user_id == None)
             [availracers_list.append((a.id, a.name)) for a in availRacers.order_by(Racer.name).all()]
-            print(availracers_list)
             return availracers_list
 
 
@@ -69,7 +64,7 @@ def create():
             )
             if form.racer.data != 0:
                 racer = db.session.query(Racer).filter_by(id=form.racer.data).first()
-                user.racer.append(racer)
+                user.racer = racer
 
             db.session.add(user)
             db.session.commit()
