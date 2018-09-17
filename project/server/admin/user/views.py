@@ -20,7 +20,7 @@ def get_users():
 def get_availableRacers(email):
     availracers_list = [(0, "---")]
     if email == 'NONE':
-        availRacers = db.session.query(Racer).filter(Racer.user_id == None
+        availRacers = db.session.query(Racer).filter(Racer.user_id == None)
         [availracers_list.append((a.id, a.name)) for a in availRacers.order_by(Racer.name).all()]
         return availracers_list
     else:

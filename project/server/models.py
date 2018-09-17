@@ -90,6 +90,7 @@ class Event(db.Model):
     start_date = db.Column(db.Date, nullable=False)
     end_date = db.Column(db.Date, nullable=False)
     tracks = db.relationship('Track', secondary=TrackEvent, backref='events')
+    laps = db.relationship('BestLap', backref='event')
     created_date = db.Column(db.DateTime, default=datetime.datetime.utcnow(), nullable=False)
     updated_date = db.Column(db.DateTime, nullable=True)
 
@@ -125,6 +126,7 @@ class RaceClass(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(255), nullable=False)
     short_name = db.Column(db.String(255), nullable=False)
+    laps = db.relationship('BestLap', backref='raceclass')
     created_date = db.Column(db.DateTime, default=datetime.datetime.utcnow(), nullable=False)
     updated_date = db.Column(db.DateTime, nullable=True)
 
@@ -176,6 +178,7 @@ class Racer(db.Model):
     points = db.Column(db.Integer)
     cars = db.relationship('Car', secondary=CarRacer, back_populates='racers')
     sponsors = db.relationship('Sponsor', secondary=RacerSponsor, backref='racers')
+    laps = db.relationship('BestLap', backref='racer')
     created_date = db.Column(db.DateTime, default=datetime.datetime.utcnow(), nullable=False)
     updated_date = db.Column(db.DateTime, nullable=True)
     #Picture
@@ -190,3 +193,33 @@ class Racer(db.Model):
     
     def __repr__(self):
         return '<Racer {0}>'.format(self.name)
+
+class BestLap(db.Model):
+
+    __tablename__ = 'bestlaps'
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    racer_id = db.Column(db.Integer, db.ForeignKey('racers.id'), nullable=False)
+    raceclass_id = db.Column(db.Integer, db.ForeignKey('raceclasses.id'), nullable=False)
+    event_id = db.Column(db.Integer, db.ForeignKey('events.id'), nullable=False)
+    time = db.Column(db.Float)
+    is_best = db.Column(db.Boolean, nullable=False, default=False)
+    created_date = db.Column(db.DateTime, default=datetime.datetime.utcnow(), nullable=False)
+    updated_date = db.Column(db.DateTime, nullable=True)
+
+    def __init__(self, racer_id, raceclass_id, event_id, time, is_best):
+        self.racer_id = racer_id
+        self.raceclass_id = raceclass_id
+        self.event_id = event_id
+        self.time = time
+        self.is_best = is_best
+        self.created_date = datetime.datetime.now()
+    
+    def get_id(self):
+        return self.id
+    
+    def is_best(self):
+        return self.is_best
+    
+    def __repr__(self):
+        return "<BestLap(racer='%s', raceclass='%s', event='%s', time='%s')>" % (self.racer, self.raceclass, self.event, self.time)

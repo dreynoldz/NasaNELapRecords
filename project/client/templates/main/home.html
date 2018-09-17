@@ -10,6 +10,35 @@
     <h1>Welcome!</h1>
     {% endif %}
   </div>
+  <h2 class="sub-header">Best Laps</h2>
+  <div class="table-responsive">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Car#</th>
+          <th>Racer</th>
+          <th>Race Class</th>
+          <th>Track</th>
+          <th>Best Lap Time</th>
+          <th>Date</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for lap in bestlaps %}
+        <tr>
+          <td>{{ lap.id }}</td>
+          <td>{{ lap.racer.cars[0].number }}</td>
+          <td>{{ lap.racer.name }}</td>
+          <td>{{ lap.raceclass.short_name }}</td>
+          <td>{{ lap.event.tracks }}</td>
+          <td>{{ lap.time }}</td>
+          <td>{{ lap.event.created_date }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
 </div>
 
 {% endblock %}
