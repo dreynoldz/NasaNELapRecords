@@ -163,7 +163,7 @@ class Car(db.Model):
         self.created_date = datetime.datetime.now()
     
     def __repr__(self):
-        return "<Car(make='%s', model='%s', number='%s')>" % (self.make, self.model, self.number)
+        return "<Car(number='%s', make='%s', model='%s')>" % (self.number, self.make, self.model)
     
 class Racer(db.Model):
 
@@ -203,15 +203,17 @@ class BestLap(db.Model):
     raceclass_id = db.Column(db.Integer, db.ForeignKey('raceclasses.id'), nullable=False)
     event_id = db.Column(db.Integer, db.ForeignKey('events.id'), nullable=False)
     time = db.Column(db.Float)
+    lap_date = db.Column(db.DateTime, nullable=True)
     is_best = db.Column(db.Boolean, nullable=False, default=False)
     created_date = db.Column(db.DateTime, default=datetime.datetime.utcnow(), nullable=False)
     updated_date = db.Column(db.DateTime, nullable=True)
 
-    def __init__(self, racer_id, raceclass_id, event_id, time, is_best):
+    def __init__(self, racer_id, raceclass_id, event_id, time, lap_date, is_best):
         self.racer_id = racer_id
         self.raceclass_id = raceclass_id
         self.event_id = event_id
         self.time = time
+        self.lap_date = lap_date
         self.is_best = is_best
         self.created_date = datetime.datetime.now()
     
