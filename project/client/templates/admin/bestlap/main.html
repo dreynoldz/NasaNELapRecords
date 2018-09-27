@@ -1,0 +1,41 @@
+{% extends "_baseDashboard.html" %}
+{% block content %}
+
+  <p><a href="{{ url_for('admin_bestlap.create') }}" class="btn btn-md btn-success">Create User</a></p>
+  <h2 class="sub-header">Current BestLaps</h2>
+  <div class="table-responsive">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Racer</th>
+          <th>Race Class</th>
+          <th>Event</th>
+          <th>Time</th>
+          <th>Lap Date</th>
+          <th>Is Best?</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for lap in bestlaps %}
+        <tr>
+          <td>{{ lap.id }}</td>
+          <td>{{ lap.racer.name }}</td>
+          <td>{{ lap.raceclass.name }}</td>
+          <td>{{ lap.event.name }}</td>
+          <td>{{ lap.time }}</td>
+          <td>{{ lap.lap_date }}</td>
+          <td>{{ lap.is_best }}</td>
+          <td>
+            <a href="{{ url_for('admin_bestlap.update', bestlap_id = bestlap.id) }}" class="btn btn-xs btn-info"><span class="glyphicon glyphicon-edit"></span></a>
+            <a href="{{ url_for('admin_bestlap.delete', bestlap_id = bestlap.id) }}" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-remove"></span></a>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+
+{% endblock %}

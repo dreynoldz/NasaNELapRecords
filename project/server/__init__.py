@@ -54,6 +54,7 @@ def create_app(script_info=None):
     from project.server.admin.raceclass.views import admin_raceclass_blueprint
     from project.server.admin.car.views import admin_car_blueprint
     from project.server.admin.racer.views import admin_racer_blueprint
+    from project.server.admin.bestlap.views import admin_bestlap_blueprint
     app.register_blueprint(user_blueprint)
     app.register_blueprint(main_blueprint)
     app.register_blueprint(admin_blueprint)
@@ -64,6 +65,7 @@ def create_app(script_info=None):
     app.register_blueprint(admin_raceclass_blueprint)
     app.register_blueprint(admin_car_blueprint)
     app.register_blueprint(admin_racer_blueprint)
+    app.register_blueprint(admin_bestlap_blueprint)
 
     # create custom filter
     @app.template_filter()

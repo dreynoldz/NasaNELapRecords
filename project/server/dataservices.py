@@ -1,28 +1,18 @@
-
+from project.server import db
+from project.server.models import Car, CarRacer, Racer, RacerSponsor, Track, TrackEvent, \
+Event, Sponsor, BestLap
 # Helper Functions
 class DataServices():
     
-    def get_users():
-        return db.session.query(User)
-    
-    def get_tracks():
-        return db.session.query(Track)
-    
-    def get_sponsors():
-        return db.session.query(Sponsor)
-    
-    def get_racers():
-        return db.session.query(Racer)
+    def get_model(model_name):
+        return db.session.query(model_name)
 
-    def get_cars():
-        return db.session.query(Car)
+    def get_filterbyQuery(model_name, col, val):
+        return db.session.query(model_name).filter_by(col=val)
     
-    def get_events():
-        return db.session.query(Event)
+    def get_filterbyFirstQuery(model_name, col, val):
+        return db.session.query(model_name).filter_by(col=val).first()
     
-    def get_raceclasses():
-        return db.session.query(RaceClass)
-
     def get_carChoices():
         cars = get_cars()
         car_list = [(0, "---")]
@@ -32,7 +22,7 @@ class DataServices():
         return car_list
 
     def get_sponsorChoices():
-        sponsors = get_sponsors()
+        sponsors = get_model(Sponsor)
         sponsor_list = [(0, "---")]
         [sponsor_list.append((s.id, s.name)) for s in sponsors.order_by(Sponsor.name).all()]
         print("sponsor_list")
@@ -72,7 +62,7 @@ class DataServices():
                 return availracers_list
     
     def get_trackChoices():
-        tracks = get_tracks()
+        tracks = get_model(Track)
         track_list = [(0, "---")]
         [track_list.append((t.id, t.name)) for t in tracks.order_by(Track.name).all()]
         return track_list
@@ -84,6 +74,13 @@ class DataServices():
         for trackEvent in trackEvents:
             track = db.session.query(Track).filter_by(id=trackEvent.trackId).first()
             e.tracks.remove(track)
+    
+    def get_modelChoices(model_name, col):
+        choices = get_model(model_name)
+        choice_list = [(0, "---")]
+        [choice_list.append((c.id, c.col)) for c in choices.order_by(model_name.col).all()]
+        return choice_list
+    
 
 class UIServices():
 

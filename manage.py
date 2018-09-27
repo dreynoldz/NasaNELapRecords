@@ -74,7 +74,7 @@ def create_data():
     db.session.add(c1)
     db.session.add(r1)
     db.session.commit()
-    bl = BestLap(racer_id=r1.id, raceclass_id=rc1.id, event_id=e3.id, time=60.0, is_best=True)
+    bl = BestLap(racer_id=r1.id, raceclass_id=rc1.id, event_id=e3.id, time=60.0, lap_date=date(2018, 9, 28), is_best=True)
     db.session.add(bl)
     db.session.commit()
     print(e1.name)

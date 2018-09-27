@@ -1,0 +1,28 @@
+{% extends '_baseDashboard.html' %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block content %}
+
+  <h2 class="sub-header">Update: {{ bestlap.racer.name }} | {{ bestlap.raceclass.name }} | {{ bestlap.event.name }} | {{ bestlap.time }}</h2>
+  <div class="table-responsive">
+    <form class="form" role="form" method="post" action="">
+
+      {{ form.csrf_token }}
+      {{ form.hidden_tag() }}
+      {{ wtf.form_errors(form, hiddens="only") }}
+
+
+      <div class="col-lg-4 col-sm-4">
+
+        {{ wtf.form_field(form.racer) }}
+        {{ wtf.form_field(form.raceclass) }}
+        {{ wtf.form_field(form.event) }}
+        {{ wtf.form_field(form.time) }}
+        {{ wtf.form_field(form.lap_date) }}
+        {{ wtf.form_field(form.is_best) }}
+
+        <button class="btn btn-success" type="submit">Update</button>
+      </div>
+    </form>
+  </div>
+{% endblock content %}
