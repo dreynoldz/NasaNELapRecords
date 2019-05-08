@@ -150,7 +150,7 @@ def update(model_name, model_id):
         
         elif model_name == 'Event':
             form = EventForm(request.form)
-            form.tracks.choices = get_trackChoices()
+            form.tracks.choices = DataServices.get_modelChoices(Track, 'name')
 
             if data:
                 form.name.data = data.name

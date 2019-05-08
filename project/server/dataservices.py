@@ -10,9 +10,16 @@ class DataServices():
     def get_filter(model_name, col, val, isFirst):
         filter = {col: val}
         if isFirst == True:
-            return db.session.query(model_name).filter(*filter).first()
+            return db.session.query(model_name).filter_by(**filter).first()
         else:
-            return DataServices.get_model(model_name).filter(*filter).all()
+            return DataServices.get_model(model_name).filter_by(**filter).all()
+    
+    def get_modelChoices(model_name, col):
+        choices = DataServices.get_model(model_name)
+        choice_list = [(0, "---")]
+        f = getattr(model_name, col)
+        [choice_list.append((c.id, c.name)) for c in choices.order_by(f).all()]
+        return choice_list
 
     def get_carChoices():
         cars = get_cars()
@@ -76,12 +83,7 @@ class DataServices():
             track = db.session.query(Track).filter_by(id=trackEvent.trackId).first()
             e.tracks.remove(track)
 
-    def get_modelChoices(model_name, col):
-        choices = DataServices.get_model(model_name)
-        choice_list = [(0, "---")]
-        f = getattr(model_name, col)
-        [choice_list.append((c.id, c.name)) for c in choices.order_by(f).all()]
-        return choice_list
+    
     
 
 class UIServices():

@@ -125,7 +125,7 @@ def cov():
 @cli.command()
 def get_test():
     model_name = 'Track'
-    d = DataServices.get_filter(eval(model_name),'id', '3', True)
+    d = DataServices.get_filter(eval(model_name),'id', 2, True)
     print(d)
     return 0
 
