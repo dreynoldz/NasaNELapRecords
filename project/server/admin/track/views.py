@@ -8,6 +8,7 @@ from flask_login import login_required, current_user
 from project.server import bcrypt, db
 from project.server.models import Track, TrackEvent, Event
 from project.server.admin.track.forms import TrackForm
+from project.server.dataservices import DataServices, UIServices
 
 # Blueprints
 admin_track_blueprint = Blueprint('admin_track', __name__,)
@@ -26,7 +27,7 @@ def get_pghead():
 @login_required
 def main():
     if current_user.is_admin():
-        return render_template('admin/track/main.html', tracks=get_tracks(), pghead=get_pghead())
+        return render_template('admin/track/main.html', tracks=get_tracks(), pghead=get_pghead(), settings=UIServices.get_settings())
     else:
         flash('You are not an admin!', 'danger')
         return redirect(url_for("user.members"))
@@ -46,8 +47,8 @@ def create():
             db.session.commit()
 
             flash('New track created.', 'success')
-            return redirect(url_for("admin_track.main", pghead=get_pghead()))
-        return render_template('admin/track/create.html', form=form, pghead=get_pghead())
+            return redirect(url_for("admin_track.main", pghead=get_pghead(), settings=UIServices.get_settings()))
+        return render_template('admin/track/create.html', form=form, pghead=get_pghead(), settings=UIServices.get_settings())
     else:
         flash('You are not an admin!', 'danger') 
         return redirect(url_for("user.members"))
@@ -68,13 +69,13 @@ def update(track_id):
             db.session.commit()
 
             flash('Track Updated.', 'success')
-            return redirect(url_for("admin_track.main", pghead=get_pghead()))
+            return redirect(url_for("admin_track.main", pghead=get_pghead(), settings=UIServices.get_settings()))
         
         if track:
             form.name.data = track.name
             form.short_name.data = track.short_name
 
-        return render_template('admin/track/update.html', track=track, form=form, pghead=get_pghead())
+        return render_template('admin/track/update.html', track=track, form=form, pghead=get_pghead(), settings=UIServices.get_settings())
     else:
         flash('You are not an admin!', 'danger')
         return redirect(url_for("user.members"))
@@ -92,7 +93,7 @@ def delete(track_id):
         track.delete()
         db.session.commit()
         flash('The track was deleted.', 'success')
-        return redirect(url_for('admin_track.main', pghead=get_pghead()))
+        return redirect(url_for('admin_track.main', pghead=get_pghead(), settings=UIServices.get_settings()))
     else:
         flash('You are not an admin!', 'danger')
         return redirect(url_for("user.members"))

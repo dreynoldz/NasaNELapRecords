@@ -2,14 +2,14 @@
 <div class="col-sm-3 col-md-2 sidebar">
     <ul class="nav nav-sidebar">
       <li class="nav_item"><a href="{{ url_for('admin.overview') }}">Overview <span class="sr-only">(current)</span></a></li>
-      <li class="nav_item"><a href="{{ url_for('admin_user.main') }}">Users</a></li>
-      <li class="nav_item"><a href="{{ url_for('admin_track.main') }}">Tracks</a></li>
-      <li class="nav_item"><a href="{{ url_for('admin_event.main') }}">Events</a></li>
+      <li class="nav_item"><a href="{{ url_for('admin.main', model_name='User') }}">Users</a></li>
+      <li class="nav_item"><a href="{{ url_for('admin.main', model_name='Track') }}">Tracks</a></li>
+      <li class="nav_item"><a href="{{ url_for('admin.main', model_name='Event') }}">Events</a></li>
       <li class="nav_item"><a href="{{ url_for('admin_raceclass.main') }}">RaceClasses</a></li>
       <li class="nav_item"><a href="{{ url_for('admin_sponsor.main') }}">Sponsors</a></li>
       <li class="nav_item"><a href="{{ url_for('admin_car.main') }}">Cars</a></li>
       <li class="nav_item"><a href="{{ url_for('admin_racer.main') }}">Racers</a></li>
-      <li class="nav_item"><a href="{{ url_for('admin_bestlap.main') }}">Best Laps</a></li>
+      <li class="nav_item"><a href="{{ url_for('admin.main', model_name='BestLap') }}">Best Laps</a></li>
       
     </ul>
     <!--

@@ -8,6 +8,7 @@ from flask_login import login_required, current_user
 from project.server import bcrypt, db
 from project.server.models import Event, Track, TrackEvent
 from project.server.admin.forms import EventForm, TrackForm
+from project.server.dataservices import DataServices, UIServices
 
 # Blueprints
 admin_event_blueprint = Blueprint('admin_event', __name__,)
@@ -45,7 +46,7 @@ def get_pghead():
 @login_required
 def main():
     if current_user.is_admin():
-        return render_template('admin/event/main.html', events=get_events(), pghead=get_pghead())
+        return render_template('admin/event/main.html', events=get_events(), pghead=get_pghead(), settings=UIServices.get_settings())
     else:
         flash('You are not an admin!', 'danger')
         return redirect(url_for("user.members"))
@@ -72,8 +73,8 @@ def create():
             db.session.commit()
 
             flash('New event created.', 'success')
-            return redirect(url_for("admin_event.main", pghead=get_pghead()))
-        return render_template('admin/event/create.html', form=form, pghead=get_pghead())
+            return redirect(url_for("admin_event.main", pghead=get_pghead(), settings=UIServices.get_settings()))
+        return render_template('admin/event/create.html', form=form, pghead=get_pghead(), settings=UIServices.get_settings())
     else:
         flash('You are not an admin!', 'danger') 
         return redirect(url_for("user.members"))
@@ -102,14 +103,14 @@ def update(event_id):
             db.session.commit()
 
             flash('Event Updated.', 'success')
-            return redirect(url_for("admin_event.main", pghead=get_pghead()))
+            return redirect(url_for("admin_event.main", pghead=get_pghead(), settings=UIServices.get_settings()))
         
         if event:
             form.name.data = event.name
             form.start_date.data = event.start_date
             form.end_date.data = event.end_date
 
-        return render_template('admin/event/update.html', event=event, form=form, pghead=get_pghead())
+        return render_template('admin/event/update.html', event=event, form=form, pghead=get_pghead(), settings=UIServices.get_settings())
     else:
         flash('You are not an admin!', 'danger')
         return redirect(url_for("user.members"))
@@ -123,7 +124,7 @@ def delete(event_id):
         event.delete()
         db.session.commit()
         flash('The event was deleted.', 'success')
-        return redirect(url_for('admin_event.main', pghead=get_pghead()))
+        return redirect(url_for('admin_event.main', pghead=get_pghead(), settings=UIServices.get_settings()))
     else:
         flash('You are not an admin!', 'danger')
         return redirect(url_for("user.members"))

@@ -1,8 +1,8 @@
 # project/server/config.py
 
 import os
+from contextlib import suppress
 basedir = os.path.abspath(os.path.dirname(__file__))
-
 
 class BaseConfig(object):
     """Base configuration."""
@@ -21,6 +21,7 @@ class DevelopmentConfig(BaseConfig):
     SQLALCHEMY_DATABASE_URI = 'sqlite:///{0}'.format(
         os.path.join(basedir, 'dev.db'))
     DEBUG_TB_ENABLED = True
+    FLASK_DEBUG = 1
 
 
 class TestingConfig(BaseConfig):
@@ -38,3 +39,12 @@ class ProductionConfig(BaseConfig):
     SECRET_KEY = 'my_precious'
     SQLALCHEMY_DATABASE_URI = 'postgresql://localhost/example'
     DEBUG_TB_ENABLED = False
+
+class SiteSetting():
+    """Setup the website defaults."""
+    TITLE = 'NasaNE Lap Records'
+    DESCRIPTION = 'NasaNE Lap Database'
+    HOME = 'Lap Records'
+    AUTHOR = 'Aaron Van Blarcom'
+    EMAIL = 'aaron@van-blar.com'
+    COPYRIGHT = 'AVB Designs'

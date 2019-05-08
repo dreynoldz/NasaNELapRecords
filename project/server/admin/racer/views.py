@@ -7,6 +7,7 @@ from flask_login import login_required, current_user
 
 from project.server import bcrypt, db
 from project.server.models import Racer, Car, CarRacer, Sponsor, RacerSponsor
+from project.server.dataservices import DataServices, UIServices
 from project.server.admin.racer.forms import RacerForm
 
 # Blueprints
@@ -66,7 +67,7 @@ def get_pghead():
 @login_required
 def main():
     if current_user.is_admin():
-        return render_template('admin/racer/main.html', racers=get_racers(), pghead=get_pghead())
+        return render_template('admin/racer/main.html', racers=get_racers(), pghead=get_pghead(), settings=UIServices.get_settings())
     else:
         flash('You are not an admin!', 'danger')
         return redirect(url_for("user.members"))
@@ -101,8 +102,8 @@ def create():
             db.session.commit()
 
             flash('New racer created.', 'success')
-            return redirect(url_for("admin_racer.main", pghead=get_pghead()))
-        return render_template('admin/racer/create.html', form=form, pghead=get_pghead())
+            return redirect(url_for("admin_racer.main", pghead=get_pghead(), settings=UIServices.get_settings()))
+        return render_template('admin/racer/create.html', form=form, pghead=get_pghead(), settings=UIServices.get_settings())
     else:
         flash('You are not an admin!', 'danger') 
         return redirect(url_for("user.members"))
@@ -142,7 +143,7 @@ def update(racer_id):
             db.session.commit()
 
             flash('Racer Updated.', 'success')
-            return redirect(url_for("admin_racer.main", pghead=get_pghead()))
+            return redirect(url_for("admin_racer.main", pghead=get_pghead(), settings=UIServices.get_settings()))
         
         if racer:
             form.email.data = racer.email
@@ -151,7 +152,7 @@ def update(racer_id):
             form.state.data = racer.state
             form.points.data = racer.points
 
-        return render_template('admin/racer/update.html', racer=racer, form=form, pghead=get_pghead())
+        return render_template('admin/racer/update.html', racer=racer, form=form, pghead=get_pghead(), settings=UIServices.get_settings())
     else:
         flash('You are not an admin!', 'danger')
         return redirect(url_for("user.members"))
@@ -166,7 +167,7 @@ def delete(racer_id):
         racer.delete()
         db.session.commit()
         flash('The racer was deleted.', 'success')
-        return redirect(url_for('admin_racer.main', pghead=get_pghead()))
+        return redirect(url_for('admin_racer.main', pghead=get_pghead(), settings=UIServices.get_settings()))
     else:
         flash('You are not an admin!', 'danger')
         return redirect(url_for("user.members"))

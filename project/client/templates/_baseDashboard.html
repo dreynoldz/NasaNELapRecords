@@ -3,10 +3,17 @@
 
   <head>
     <meta charset="utf-8">
-    <title>NasaNE Lap Records{% block title %}{% endblock %}</title>
-    <!-- meta -->
-    <meta name="description" content="NasaNE Lap Database">
-    <meta name="author" content="Aaron Van Blarcom">
+    <title>
+        {% if settings.TITLE %}
+          {{ settings.TITLE }}
+        {% else %}
+          Flask
+        {% endif %}
+        {% block title %}{% endblock %}
+      </title>
+      <!-- meta -->
+      <meta name="description" content="{% if settings.DESCRIPTION %}{{ settings.DESCRIPTION }}{% else %}Flask App{% endif %}">
+      <meta name="author" content="{% if settings.AUTHOR %}{{ settings.AUTHOR }}{% else %}Flask Author{% endif %}">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <!-- styles -->
     <link rel="icon" type="image/png" href="{{url_for('static', filename='favicon.ico')}}"/>
@@ -50,7 +57,7 @@
             {% endif %}
             {% endwith %}
             <!-- child template -->
-            <h1 class="page-header">{{pghead}}</h1>
+            <h1 class="page-header">{{model_name}}</h1>
             {% block content %}{% endblock %}
             <!-- errors -->
             {% if error %}

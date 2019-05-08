@@ -1,7 +1,8 @@
 <footer>
   <div>
     <small>
-      <span>© <a href="mailto:aaron@van-blar.com">AVB Designs</a></span>
+      
+        <span>© <a href="mailto:{% if settings.EMAIL %}{{ settings.EMAIL }}{% else %}Flask Email{% endif %}">{% if settings.COPYRIGHT %}{{ settings.COPYRIGHT }}{% else %}Flask COPYRIGHT{% endif %}</a></span>
     </small>
   </div>
 </footer>

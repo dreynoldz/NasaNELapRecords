@@ -2,8 +2,9 @@
 
 
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SelectMultipleField, DateField
-from wtforms.validators import DataRequired, Email, Length, EqualTo
+from wtforms import StringField, PasswordField, BooleanField, SelectMultipleField, DateField, \
+    FloatField, SelectField
+from wtforms.validators import DataRequired, Email, Length, EqualTo, NumberRange
 
 class CreateUserForm(FlaskForm):
     email = StringField(
@@ -26,9 +27,11 @@ class CreateUserForm(FlaskForm):
         ]
     )
     admin = BooleanField('Admin')
+    racer = SelectField('Racer', choices=[], coerce=int)
 
 class UpdateUserForm(FlaskForm):
     admin = BooleanField('Admin')
+    racer = SelectField('Racer', choices=[], coerce=int)
 
 class passwordResetForm(FlaskForm):
     email = StringField(
@@ -51,6 +54,19 @@ class passwordResetForm(FlaskForm):
         ]
     )
 
+class TrackForm(FlaskForm):
+    name = StringField(
+        'Name',
+        validators=[
+            DataRequired(),
+            Length(min=6, max=80)
+        ]
+    )
+    short_name = StringField(
+        'Short Name',
+        validators=[DataRequired()]
+    )
+
 class EventForm(FlaskForm):
     name = StringField(
         'Name',
@@ -69,15 +85,17 @@ class EventForm(FlaskForm):
     )
     tracks = SelectMultipleField('Track', choices=[], coerce=int)
 
-class TrackForm(FlaskForm):
-    name = StringField(
-        'Name',
+class BestLapForm(FlaskForm):
+    racer = SelectField('Racer', choices=[], coerce=int)
+    raceclass = SelectField('Race Class', choices=[], coerce=int)
+    event = SelectField('Event', choices=[], coerce=int)
+    time = FloatField('Time',
         validators=[
-            DataRequired(),
-            Length(min=6, max=80)
+            DataRequired()
         ]
     )
-    short_name = StringField(
-        'Short Name',
+    lap_date = DateField(
+        'Lap Date',
         validators=[DataRequired()]
     )
+    is_best = BooleanField('Best Lap?')

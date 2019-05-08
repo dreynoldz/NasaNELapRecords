@@ -2,13 +2,14 @@
 
 import sys, datetime
 from flask import render_template, Blueprint, url_for, \
-    redirect, flash, request
+    redirect, flash, request, jsonify
 from flask_login import login_required, current_user
 
 from project.server import bcrypt, db
 from project.server.models import User, Racer
 from project.server.admin.user.forms import CreateUserForm, UpdateUserForm, \
     passwordResetForm
+from project.server.dataservices import DataServices, UIServices
 
 # Blueprints
 admin_user_blueprint = Blueprint('admin_user', __name__,)
@@ -22,16 +23,15 @@ def get_availableRacers(email):
     if email == 'NONE':
         availRacers = db.session.query(Racer).filter(Racer.user_id == None)
         [availracers_list.append((a.id, a.name)) for a in availRacers.order_by(Racer.name).all()]
-        return availracers_list
     else:
         availRacer = db.session.query(Racer).filter(Racer.email == email).first()
         if availRacer:
             [availracers_list.append((availRacer.id, availRacer.name))]
-            return availracers_list
         else:
             availRacers = db.session.query(Racer).filter(Racer.user_id == None)
             [availracers_list.append((a.id, a.name)) for a in availRacers.order_by(Racer.name).all()]
-            return availracers_list
+
+    return availracers_list
 
 
 def get_pghead():
@@ -44,7 +44,7 @@ def get_pghead():
 @login_required
 def main():
     if current_user.is_admin():
-        return render_template('admin/user/main.html', users=get_users(), pghead=get_pghead())
+        return render_template('admin/user/main.html', users=get_users(), pghead=get_pghead(), settings=UIServices.get_settings())
     else:
         flash('You are not an admin!', 'danger')
         return redirect(url_for("user.members"))
@@ -70,8 +70,8 @@ def create():
             db.session.commit()
 
             flash('New user created.', 'success')
-            return redirect(url_for("admin_user.main", pghead=get_pghead()))
-        return render_template('admin/user/create.html', form=form, pghead=get_pghead())
+            return redirect(url_for("admin_user.main", pghead=get_pghead(), settings=UIServices.get_settings()))
+        return render_template('admin/user/create.html', form=form, pghead=get_pghead(), settings=UIServices.get_settings())
     else:
         flash('You are not an admin!', 'danger') 
         return redirect(url_for("user.members"))
@@ -99,14 +99,14 @@ def update(user_id):
             user.updated_date = datetime.datetime.now()
             db.session.commit()
             flash('User updated!.', 'success')
-            return redirect(url_for("admin_user.main", pghead=get_pghead()))
+            return redirect(url_for("admin_user.main", pghead=get_pghead(), settings=UIServices.get_settings()))
         
         if user:
             form.admin.data = user.admin
             if user.racer:
                 form.racer.data = user.racer.id
 
-        return render_template('admin/user/update.html', user=user, form=form, pghead=get_pghead())
+        return render_template('admin/user/update.html', user=user, form=form, pghead=get_pghead(), settings=UIServices.get_settings())
     else:
         flash('You are not an admin!', 'danger')
         return redirect(url_for("user.members"))
@@ -121,7 +121,7 @@ def delete(user_id):
         user.delete()
         db.session.commit()
         flash('The user was deleted.', 'success')
-        return redirect(url_for('admin_user.main', pghead=get_pghead()))
+        return redirect(url_for('admin_user.main', pghead=get_pghead(), settings=UIServices.get_settings()))
     else:
         flash('You are not an admin!', 'danger')
-        return redirect(url_for("user.members", pghead=get_pghead()))
+        return redirect(url_for("user.members", pghead=get_pghead(), settings=UIServices.get_settings()))

@@ -7,7 +7,8 @@ from flask import render_template, Blueprint, url_for, \
 from flask_login import login_user, logout_user, login_required
 
 from project.server import db
-from project.server.models import BestLap
+from project.server.models import BestLap, Setting
+from project.server.dataservices import DataServices, UIServices
 
 
 main_blueprint = Blueprint('main', __name__,)
@@ -18,9 +19,8 @@ def get_bestlaps():
 
 @main_blueprint.route('/')
 def home():
-    return render_template('main/home.html', bestlaps=get_bestlaps())
-
+    return render_template('main/home.html', bestlaps=get_bestlaps(), settings=UIServices.get_settings())
 
 @main_blueprint.route("/about/")
 def about():
-    return render_template("main/about.html")
+    return render_template("main/about.html", settings=UIServices.get_settings())

@@ -3,10 +3,17 @@
 
   <head>
     <meta charset="utf-8">
-    <title>NasaNE Lap Records{% block title %}{% endblock %}</title>
+    <title>
+      {% if settings.TITLE %}
+        {{ settings.TITLE }}
+      {% else %}
+        Flask
+      {% endif %}
+      {% block title %}{% endblock %}
+    </title>
     <!-- meta -->
-    <meta name="description" content="NasaNE Lap Database">
-    <meta name="author" content="Aaron Van Blarcom">
+    <meta name="description" content="{% if settings.TITLE %}{{ settings.DESCRIPTION }}{% else %}Flask App{% endif %}">
+    <meta name="author" content="{% if settings.TITLE %}{{ settings.AUTHOR }}{% else %}Flask App{% endif %}">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <!-- styles -->
     <link rel="icon" type="image/png" href="{{url_for('static', filename='favicon.ico')}}"/>

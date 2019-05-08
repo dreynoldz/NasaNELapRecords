@@ -8,6 +8,7 @@ from flask_login import login_required, current_user
 from project.server import bcrypt, db
 from project.server.models import Car, CarRacer, Racer
 from project.server.admin.car.forms import CarForm
+from project.server.dataservices import DataServices, UIServices
 
 # Blueprints
 admin_car_blueprint = Blueprint('admin_car', __name__,)
@@ -26,7 +27,7 @@ def get_pghead():
 @login_required
 def main():
     if current_user.is_admin():
-        return render_template('admin/car/main.html', cars=get_cars(), pghead=get_pghead())
+        return render_template('admin/car/main.html', cars=get_cars(), pghead=get_pghead(), settings=UIServices.get_settings())
     else:
         flash('You are not an admin!', 'danger')
         return redirect(url_for("user.members"))
@@ -50,7 +51,7 @@ def create():
 
             flash('New car created.', 'success')
             return redirect(url_for("admin_car.main", pghead=get_pghead()))
-        return render_template('admin/car/create.html', form=form, pghead=get_pghead())
+        return render_template('admin/car/create.html', form=form, pghead=get_pghead(), settings=UIServices.get_settings())
     else:
         flash('You are not an admin!', 'danger') 
         return redirect(url_for("user.members"))
@@ -72,7 +73,7 @@ def update(car_id):
             db.session.commit()
 
             flash('Car Updated.', 'success')
-            return redirect(url_for("admin_car.main", pghead=get_pghead()))
+            return redirect(url_for("admin_car.main", pghead=get_pghead(), settings=UIServices.get_settings()))
         
         if car:
             form.make.data = car.make
@@ -81,7 +82,7 @@ def update(car_id):
             form.color.data = car.color
             form.number.data = car.number
 
-        return render_template('admin/car/update.html', car=car, form=form, pghead=get_pghead())
+        return render_template('admin/car/update.html', car=car, form=form, pghead=get_pghead(), settings=UIServices.get_settings())
     else:
         flash('You are not an admin!', 'danger')
         return redirect(url_for("user.members"))
@@ -99,7 +100,7 @@ def delete(car_id):
         track.delete()
         db.session.commit()
         flash('The car was deleted.', 'success')
-        return redirect(url_for('admin_car.main', pghead=get_pghead()))
+        return redirect(url_for('admin_car.main', pghead=get_pghead(), settings=UIServices.get_settings()))
     else:
         flash('You are not an admin!', 'danger')
         return redirect(url_for("user.members"))

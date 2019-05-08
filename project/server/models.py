@@ -6,6 +6,7 @@ import datetime
 from flask import current_app
 
 from project.server import db, bcrypt
+from sqlalchemy.inspection import inspect
 
 TrackEvent = db.Table('TrackEvent',
     db.Column('trackId', db.Integer, db.ForeignKey('tracks.id')),
@@ -22,7 +23,26 @@ CarRacer = db.Table('CarRacer',
     db.Column('racerId', db.Integer, db.ForeignKey('racers.id'))
 )
 
-class User(db.Model):
+class ModelMixin:
+    """Provide dict-like interface to db.Model subclasses."""
+
+    def __getitem__(self, key):
+        """Expose object attributes like dict values."""
+        return getattr(self, key)
+
+    def keys(self):
+        """Identify what db columns we have."""
+        return inspect(self).attrs.keys()
+
+class Setting(db.Model, ModelMixin):
+
+    __tablename__ = 'settings'
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String(255), nullable=False)
+    value = db.Column(db.String(255), nullable=False)
+
+class User(db.Model, ModelMixin):
 
     __tablename__ = 'users'
 
@@ -62,7 +82,7 @@ class User(db.Model):
     def __repr__(self):
         return '<User {0}>'.format(self.email)
 
-class Track(db.Model):
+class Track(db.Model, ModelMixin):
 
     __tablename__ = 'tracks'
 
@@ -81,7 +101,7 @@ class Track(db.Model):
     def __repr__(self):
         return '<Track {0}>'.format(self.name)
 
-class Event(db.Model):
+class Event(db.Model, ModelMixin):
     
     __tablename__ = 'events'
 
@@ -103,7 +123,7 @@ class Event(db.Model):
     def __repr__(self):
         return '<Event {0}>'.format(self.name)
 
-class Sponsor(db.Model):
+class Sponsor(db.Model, ModelMixin):
 
     __tablename__ = 'sponsors'
 
@@ -119,7 +139,7 @@ class Sponsor(db.Model):
     def __repr__(self):
         return '<Sponsor {0}>'.format(self.name)
 
-class RaceClass(db.Model):
+class RaceClass(db.Model, ModelMixin):
 
     __tablename__ = 'raceclasses'
 
@@ -139,7 +159,7 @@ class RaceClass(db.Model):
     def __repr__(self):
         return '<RaceClass {0}>'.format(self.name)
     
-class Car(db.Model):
+class Car(db.Model, ModelMixin):
 
     __tablename__ = 'cars'
 
@@ -165,7 +185,7 @@ class Car(db.Model):
     def __repr__(self):
         return "<Car(number='%s', make='%s', model='%s')>" % (self.number, self.make, self.model)
     
-class Racer(db.Model):
+class Racer(db.Model, ModelMixin):
 
     __tablename__ = 'racers'
 
@@ -194,34 +214,34 @@ class Racer(db.Model):
     def __repr__(self):
         return '<Racer {0}>'.format(self.name)
 
-class BestLap(db.Model):
+class BestLap(db.Model, ModelMixin):
 
     __tablename__ = 'bestlaps'
 
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    racer_id = db.Column(db.Integer, db.ForeignKey('racers.id'), nullable=False)
-    raceclass_id = db.Column(db.Integer, db.ForeignKey('raceclasses.id'), nullable=False)
-    event_id = db.Column(db.Integer, db.ForeignKey('events.id'), nullable=False)
-    time = db.Column(db.Float)
-    lap_date = db.Column(db.DateTime, nullable=True)
-    is_best = db.Column(db.Boolean, nullable=False, default=False)
-    created_date = db.Column(db.DateTime, default=datetime.datetime.utcnow(), nullable=False)
-    updated_date = db.Column(db.DateTime, nullable=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True, key='#')
+    racer_id = db.Column(db.Integer, db.ForeignKey('racers.id'), nullable=False, key='Racer')
+    raceclass_id = db.Column(db.Integer, db.ForeignKey('raceclasses.id'), nullable=False, key='Race Class')
+    event_id = db.Column(db.Integer, db.ForeignKey('events.id'), nullable=False, key='Event')
+    time = db.Column(db.Float, key='Lap Time')
+    lap_date = db.Column(db.DateTime, nullable=True, key='Lap Date')
+    best = db.Column(db.Boolean, nullable=False, default=False, key='Is Best?')
+    created_date = db.Column(db.DateTime, default=datetime.datetime.utcnow(), nullable=False, key='Create Date')
+    updated_date = db.Column(db.DateTime, nullable=True, key='Update Date')
 
-    def __init__(self, racer_id, raceclass_id, event_id, time, lap_date, is_best):
+    def __init__(self, racer_id, raceclass_id, event_id, time, lap_date, best=False):
         self.racer_id = racer_id
         self.raceclass_id = raceclass_id
         self.event_id = event_id
         self.time = time
         self.lap_date = lap_date
-        self.is_best = is_best
+        self.best = best
         self.created_date = datetime.datetime.now()
     
     def get_id(self):
         return self.id
     
     def is_best(self):
-        return self.is_best
+        return self.best
     
     def __repr__(self):
         return "<BestLap(racer='%s', raceclass='%s', event='%s', time='%s')>" % (self.racer, self.raceclass, self.event, self.time)

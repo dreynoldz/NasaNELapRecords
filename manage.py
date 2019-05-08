@@ -7,8 +7,11 @@ import coverage
 from flask.cli import FlaskGroup
 
 from project.server import create_app, db
-from project.server.models import User, Track, Event, Sponsor, RaceClass, Car, Racer, BestLap
+from project.server.config import SiteSetting
+from project.server.models import Setting, User, Track, Event, Sponsor, RaceClass, Car, Racer, BestLap
+from project.server.dataservices import DataServices, UIServices
 from datetime import date
+from sqlalchemy.ext.serializer import loads, dumps
 
 
 app = create_app()
@@ -48,7 +51,7 @@ def create_admin():
 
 @cli.command()
 def create_data():
-    """Creates sample data."""
+    """Creates sample data."""    
     t1 = Track(name='Watkins Glen International', short_name='WGI')
     t2 = Track(name='Pocono South-East', short_name="POCSE")
     
@@ -74,7 +77,7 @@ def create_data():
     db.session.add(c1)
     db.session.add(r1)
     db.session.commit()
-    bl = BestLap(racer_id=r1.id, raceclass_id=rc1.id, event_id=e3.id, time=60.0, is_best=True, lap_date = date(2018, 10, 14))
+    bl = BestLap(racer_id=r1.id, raceclass_id=rc1.id, event_id=e3.id, time=60.0, best=True, lap_date = date(2018, 10, 14))
     db.session.add(bl)
     db.session.commit()
     print(e1.name)
@@ -84,7 +87,16 @@ def create_data():
     print(bl.racer.cars)
     #pass
 
-
+@cli.command()
+def create_settings():
+    """Creates site settings."""
+    settings = SiteSetting()
+    for setting in dir(settings):
+        if not setting.startswith('__') and not callable(getattr(settings,setting)):
+            db.session.add(Setting(name=setting, value=getattr(settings,setting)))
+            print(setting,"=",getattr(settings,setting))
+    db.session.commit()
+    
 @cli.command()
 def test():
     """Runs the unit tests without test coverage."""
@@ -110,6 +122,12 @@ def cov():
         return 0
     return 1
 
+@cli.command()
+def get_test():
+    model_name = 'Track'
+    d = DataServices.get_filter(eval(model_name),'id', '3', True)
+    print(d)
+    return 0
 
 
 if __name__ == '__main__':

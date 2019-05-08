@@ -8,6 +8,7 @@ from flask_login import login_required, current_user
 from project.server import bcrypt, db
 from project.server.models import Sponsor
 from project.server.admin.sponsor.forms import SponsorForm
+from project.server.dataservices import DataServices, UIServices
 
 # Blueprints
 admin_sponsor_blueprint = Blueprint('admin_sponsor', __name__,)
@@ -25,7 +26,7 @@ def get_pghead():
 @login_required
 def main():
     if current_user.is_admin():
-        return render_template('admin/sponsor/main.html', sponsors=get_sponsors(), pghead=get_pghead())
+        return render_template('admin/sponsor/main.html', sponsors=get_sponsors(), pghead=get_pghead(), settings=UIServices.get_settings())
     else:
         flash('You are not an admin!', 'danger')
         return redirect(url_for("user.members"))
@@ -44,8 +45,8 @@ def create():
             db.session.commit()
 
             flash('New sponsor created.', 'success')
-            return redirect(url_for("admin_sponsor.main", pghead=get_pghead()))
-        return render_template('admin/sponsor/create.html', form=form, pghead=get_pghead())
+            return redirect(url_for("admin_sponsor.main", pghead=get_pghead(), settings=UIServices.get_settings()))
+        return render_template('admin/sponsor/create.html', form=form, pghead=get_pghead(), settings=UIServices.get_settings())
     else:
         flash('You are not an admin!', 'danger') 
         return redirect(url_for("user.members"))
@@ -63,12 +64,12 @@ def update(sponsor_id):
             db.session.commit()
 
             flash('Sponsor Updated.', 'success')
-            return redirect(url_for("admin_sponsor.main", pghead=get_pghead()))
+            return redirect(url_for("admin_sponsor.main", pghead=get_pghead(), settings=UIServices.get_settings()))
         
         if sponsor:
             form.name.data = sponsor.name
 
-        return render_template('admin/sponsor/update.html', sponsor=sponsor, form=form, pghead=get_pghead())
+        return render_template('admin/sponsor/update.html', sponsor=sponsor, form=form, pghead=get_pghead(), settings=UIServices.get_settings())
     else:
         flash('You are not an admin!', 'danger')
         return redirect(url_for("user.members"))
@@ -81,7 +82,7 @@ def delete(sponsor_id):
         sponsor.delete()
         db.session.commit()
         flash('The sponsor was deleted.', 'success')
-        return redirect(url_for('admin_sponsor.main', pghead=get_pghead()))
+        return redirect(url_for('admin_sponsor.main', pghead=get_pghead(), settings=UIServices.get_settings()))
     else:
         flash('You are not an admin!', 'danger')
         return redirect(url_for("user.members"))

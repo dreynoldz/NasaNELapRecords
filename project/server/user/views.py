@@ -8,6 +8,7 @@ from flask_login import login_user, logout_user, login_required
 from project.server import bcrypt, db
 from project.server.models import User, Track, Event
 from project.server.user.forms import LoginForm, RegisterForm
+from project.server.dataservices import UIServices
 
 # Blueprints
 user_blueprint = Blueprint('user', __name__,)
@@ -36,7 +37,7 @@ def register():
         flash('Thank you for registering.', 'success')
         return redirect(url_for("user.members"))
 
-    return render_template('user/register.html', form=form)
+    return render_template('user/register.html', form=form, settings=UIServices.get_settings())
 
 
 @user_blueprint.route('/login', methods=['GET', 'POST'])
@@ -54,7 +55,7 @@ def login():
         else:
             flash('Invalid email and/or password.', 'danger')
             return render_template('user/login.html', form=form)
-    return render_template('user/login.html', title='Please Login', form=form)
+    return render_template('user/login.html', title='Please Login', form=form, settings=UIServices.get_settings())
 
 
 @user_blueprint.route('/logout')
@@ -71,5 +72,6 @@ def members():
     return render_template(
         'user/members.html',
         tracks=get_tracks(),
-        events=get_events()
+        events=get_events(),
+        settings=UIServices.get_settings()
         )
