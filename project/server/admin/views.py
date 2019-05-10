@@ -9,7 +9,7 @@ from project.server.models import User, Car, CarRacer, RaceClass, Racer, RacerSp
 Event, Sponsor, BestLap
 from project.server.dataservices import DataServices, UIServices
 from project.server.admin.forms import BestLapForm, CreateUserForm, UpdateUserForm, \
-    passwordResetForm, NameSNForm, EventForm
+    passwordResetForm, NameSNForm, EventForm, CarForm,RacerForm
 
 # Blueprints
 admin_blueprint = Blueprint('admin', __name__,)
@@ -54,7 +54,11 @@ def create(model_name):
         elif model_name == 'Sponsor':
             form = SponsorForm(request.form)
         elif model_name == 'Car':
-            form = CarForm(request.form) 
+            form = CarForm(request.form)
+        elif model_name == 'Racer':
+            form = RacerForm(request.form)
+            form.cars.choices = DataServices.get_carChoices()
+            form.sponsors.choices = DataServices.get_sponsorChoices()
         if model_name == 'BestLap':
             form = BestLapForm(request.form)
             form.racer.choices = DataServices.get_availableRacers("NONE")
@@ -109,6 +113,26 @@ def create(model_name):
                     number=form.number.data
                 )
                 message = 'New car created.'
+            elif model_name == 'Racer':
+                row = Racer(
+                    email=form.email.data,
+                    name=form.name.data,
+                    city=form.city.data,
+                    state=form.state.data,
+                    points=form.points.data,
+                )
+
+                for c in form.cars.data:
+                    if c != 0:
+                        car = DataServices.get_filter(Car, 'id', c, True)
+                        row.cars.append(car)
+                
+                for s in form.sponsors.data:
+                    if s != 0:
+                        sponsor = DataServices.get_filter(Sponsor, 'id', s, True)
+                        row.sponsors.append(sponsor)
+                        
+                message = 'New racer created.'
             elif model_name == 'BestLap':
                 row = BestLap(
                     time=form.time.data,
@@ -127,7 +151,7 @@ def create(model_name):
             db.session.add(row)
             db.session.commit() 
             flash(message, 'success')
-            return redirect(url_for("admin.main", model_name=model_name, settings=UIServices.get_settings()))
+            return redirect(url_for("admin.main", model_name=model_name))
         return render_template('admin/create.html', form=form, model_name=model_name, settings=UIServices.get_settings())
     else:
         flash('You are not an admin!', 'danger') 
@@ -169,6 +193,16 @@ def update(model_name, model_id):
                 form.year.data = data.year
                 form.color.data = data.color
                 form.number.data = data.number
+        elif model_name == 'Racer':
+            form = RacerForm(request.form)
+            form.cars.choices = DataServices.get_carChoices()
+            form.sponsors.choices = DataServices.get_sponsorChoices()
+            if data:
+                form.email.data = data.email
+                form.name.data = data.name
+                form.city.data = data.city
+                form.state.data = data.state
+                form.points.data = data.points
         elif model_name == 'BestLap':
             form = BestLapForm(request.form)
             form.racer.choices = DataServices.get_availableRacers("NONE")
@@ -225,8 +259,32 @@ def update(model_name, model_id):
                 data.year = form.year.data
                 data.color = form.color.data
                 data.number = form.number.data
-                cdataar.updated_date = datetime.datetime.now()
+                data.updated_date = datetime.datetime.now()
                 message = 'Car Updated.'
+            elif model_name == 'Racer':
+                data.email = form.email.data
+                data.name = form.name.data
+                data.city = form.city.data
+                data.state = form.state.data
+                data.points = form.points.data
+
+                for c in form.cars.data:
+                    if c != 0:
+                        car = DataServices.get_filter(eval('Car'), 'id', c, True)
+                        data.cars.append(car)
+                    else:
+                        DataServices.remove_car_association(model_id)
+                        cars=[]
+                
+                for s in form.sponsors.data:
+                    if s != 0:
+                        sponsor = DataServices.get_filter(eval('Sponsor'), 'id', s, True)
+                        data.sponsors.append(sponsor)
+                    else:
+                        DataServices.remove_sponsor_association(model_id)
+                        sponsors=[]
+                data.updated_date = datetime.datetime.now()
+                message = 'Racer Updated.'
             elif model_name == 'BestLap':
                 data.racer_id = form.racer.data
                 data.raceclass_id = form.raceclass.data
@@ -243,7 +301,7 @@ def update(model_name, model_id):
 
             db.session.commit()
             flash(message, 'success')
-            return redirect(url_for("admin.main", model_name=model_name, settings=UIServices.get_settings()))
+            return redirect(url_for("admin.main", model_name=model_name))
         return render_template('admin/update.html', model_name=model_name, data=data, form=form, settings=UIServices.get_settings())
     else:
         flash('You are not an admin!', 'danger')
@@ -275,6 +333,10 @@ def delete(model_name,model_id):
                 racer = DataServices.get_filter(Racer, 'id', carRacer.racerId, True)
                 c.racers.remove(racer)
             message = 'The car was deleted.'
+        elif model_name == 'Racer':
+            DataServices.remove_car_association(model_id)
+            DataServices.remove_sponsor_association(model_id)
+            message = 'The racer was deleted.'
         else:
             message = model_name + ':' + model_id + ' was deleted'
         

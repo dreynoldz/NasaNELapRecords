@@ -22,7 +22,7 @@ class DataServices():
         return choice_list
 
     def get_carChoices():
-        cars = get_cars()
+        cars = DataServices.get_model(Car)
         car_list = [(0, "---")]
         [car_list.append((c.id, c.number + ' ' + c.make + ' ' + c.model)) for c in cars.order_by(Car.number).all()]
         print("car_list")
