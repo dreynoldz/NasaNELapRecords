@@ -18,7 +18,7 @@ class RacerForm(FlaskForm):
         'Name',
         validators=[
             DataRequired(),
-            Length(min=6, max=40)
+            Length(min=3, max=40)
         ]
     )
     city = StringField(

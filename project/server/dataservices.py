@@ -45,13 +45,20 @@ class DataServices():
             car = db.session.query(Car).filter_by(id=carRacer.carId).first()
             r.cars.remove(car)
 
-    def remove_sponsor_association(racer_id):
+    def remove_racer_from_sponsor_association(racer_id):
         racer = db.session.query(Racer).filter_by(id=racer_id)
         r = racer.first()
         racerSponsors = db.session.query(RacerSponsor).filter_by(racerId=racer_id).all()
         for racerSponsor in racerSponsors:
             sponsor = db.session.query(Sponsor).filter_by(id=racerSponsor.sponsorId).first()
             r.sponsors.remove(sponsor)
+    
+    def remove_sponsor_from_racer_association(sponsor_id):
+        sponsor = DataServices.get_filter(Sponsor, 'id', sponsor_id, True)
+        racerSponsors = DataServices.get_filter(RacerSponsor, 'sponsorId', sponsor_id, False)
+        for racerSponsor in racerSponsors:
+            racer = DataServices.get_filter(Racer, 'id', racerSponsor.racerId, True)
+            racer.sponsors.remove(sponsor)
 
     def get_availableRacers(email):
         availracers_list = [(0, "---")]

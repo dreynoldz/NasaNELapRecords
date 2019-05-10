@@ -54,7 +54,7 @@ class passwordResetForm(FlaskForm):
         ]
     )
 
-class TrackForm(FlaskForm):
+class NameSNForm(FlaskForm):
     name = StringField(
         'Name',
         validators=[
@@ -72,7 +72,7 @@ class EventForm(FlaskForm):
         'Name',
         validators=[
             DataRequired(),
-            Length(min=6, max=40)
+            Length(min=5, max=40)
         ]
     )
     start_date = DateField(
@@ -84,6 +84,52 @@ class EventForm(FlaskForm):
         validators=[DataRequired()]
     )
     tracks = SelectMultipleField('Track', choices=[], coerce=int)
+
+class SponsorForm(FlaskForm):
+    name = StringField(
+        'Name',
+        validators=[
+            DataRequired(),
+            Length(min=6, max=80)
+        ]
+    )
+
+class CarForm(FlaskForm):
+    make = StringField(
+        'Make',
+        validators=[
+            DataRequired(),
+            Length(min=6, max=80)
+        ]
+    )
+    model = StringField(
+        'Model',
+        validators=[
+            DataRequired(),
+            Length(min=1, max=80)
+        ]
+    )
+    year = StringField(
+        'Year',
+        validators=[
+            DataRequired(),
+            Length(min=4, max=4)
+        ]
+    )
+    color = StringField(
+        'Color',
+        validators=[
+            DataRequired(),
+            Length(min=2, max=80)
+        ]
+    )
+    number = StringField(
+        'Number',
+        validators=[
+            DataRequired(),
+            Length(min=1, max=10)
+        ]
+    )
 
 class BestLapForm(FlaskForm):
     racer = SelectField('Racer', choices=[], coerce=int)

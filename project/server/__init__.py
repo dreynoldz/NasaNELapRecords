@@ -47,22 +47,12 @@ def create_app(script_info=None):
     from project.server.user.views import user_blueprint
     from project.server.main.views import main_blueprint
     from project.server.admin.views import admin_blueprint
-    from project.server.admin.track.views import admin_track_blueprint
-    from project.server.admin.event.views import admin_event_blueprint
-    from project.server.admin.user.views import admin_user_blueprint
-    from project.server.admin.sponsor.views import admin_sponsor_blueprint
-    from project.server.admin.raceclass.views import admin_raceclass_blueprint
     from project.server.admin.car.views import admin_car_blueprint
     from project.server.admin.racer.views import admin_racer_blueprint
     from project.server.admin.bestlap.views import admin_bestlap_blueprint
     app.register_blueprint(user_blueprint)
     app.register_blueprint(main_blueprint)
     app.register_blueprint(admin_blueprint)
-    app.register_blueprint(admin_track_blueprint)
-    app.register_blueprint(admin_event_blueprint)
-    app.register_blueprint(admin_user_blueprint)
-    app.register_blueprint(admin_sponsor_blueprint)
-    app.register_blueprint(admin_raceclass_blueprint)
     app.register_blueprint(admin_car_blueprint)
     app.register_blueprint(admin_racer_blueprint)
     app.register_blueprint(admin_bestlap_blueprint)
@@ -82,23 +72,24 @@ def create_app(script_info=None):
         return User.query.filter(User.id == int(user_id)).first()
     
         #return app
+    from project.server.dataservices import UIServices
 
     # error handlers
     @app.errorhandler(401)
     def unauthorized_page(error):
-        return render_template('errors/401.html'), 401
+        return render_template('errors/401.html', settings=UIServices.get_settings()), 401
 
     @app.errorhandler(403)
     def forbidden_page(error):
-        return render_template('errors/403.html'), 403
+        return render_template('errors/403.html', settings=UIServices.get_settings()), 403
 
     @app.errorhandler(404)
     def page_not_found(error):
-        return render_template('errors/404.html'), 404
+        return render_template('errors/404.html', settings=UIServices.get_settings()), 404
 
     @app.errorhandler(500)
     def server_error_page(error):
-        return render_template('errors/500.html'), 500
+        return render_template('errors/500.html', settings=UIServices.get_settings()), 500
 
     # shell context for flask cli
     app.shell_context_processor({'app': app, 'db': db})
