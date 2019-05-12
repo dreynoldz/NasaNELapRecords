@@ -34,7 +34,13 @@ def overview():
 @login_required
 def main(model_name):
     if current_user.is_admin():
-        return render_template('admin/main.html', data=DataServices.get_model(eval(model_name)), model_name=model_name, settings=UIServices.get_settings())
+        if model_name == 'User':
+            col = 'last_login'
+        elif model_name == 'Event':
+            col = 'start_date'
+        else:
+            col = 'id'
+        return render_template('admin/main.html', data=DataServices.get_modelOrder(eval(model_name), col, 'desc'), model_name=model_name, settings=UIServices.get_settings())
     else:
         flash('You are not an admin!', 'danger')
         return redirect(url_for("user.members"))
@@ -165,57 +171,24 @@ def update(model_name, model_id):
         if model_name == 'User':
             form = UpdateUserForm(request.form)
             form.racer.choices = DataServices.get_availableRacers(data.email)
-            if data:
-                form.admin.data = data.admin
-                if data.racer:
-                    form.racer.data = data.racer.id
         elif model_name == 'Track' or model_name == 'RaceClass':
             form = NameSNForm(request.form)
-            if data:
-                form.name.data = data.name
-                form.short_name.data = data.short_name
         elif model_name == 'Event':
             form = EventForm(request.form)
             form.tracks.choices = DataServices.get_modelChoices(Track, 'name')
-            if data:
-                form.name.data = data.name
-                form.start_date.data = data.start_date
-                form.end_date.data = data.end_date
         elif model_name == 'Sponsor':
             form = SponsorForm(request.form)
-            if data:
-                form.name.data = data.name
         elif model_name == 'Car':
             form = CarForm(request.form)
-            if data:
-                form.make.data = data.make
-                form.model.data = data.model
-                form.year.data = data.year
-                form.color.data = data.color
-                form.number.data = data.number
         elif model_name == 'Racer':
             form = RacerForm(request.form)
             form.cars.choices = DataServices.get_carChoices()
             form.sponsors.choices = DataServices.get_sponsorChoices()
-            if data:
-                form.email.data = data.email
-                form.name.data = data.name
-                form.city.data = data.city
-                form.state.data = data.state
-                form.points.data = data.points
         elif model_name == 'BestLap':
             form = BestLapForm(request.form)
             form.racer.choices = DataServices.get_availableRacers("NONE")
             form.raceclass.choices = DataServices.get_modelChoices(RaceClass, 'name')
             form.event.choices = DataServices.get_modelChoices(Event, 'name')
-            if data:
-                data.name = " | ".join([data.racer.name, data.raceclass.name, data.event.name, str(data.time)])
-                form.racer.data = data.racer.id
-                form.raceclass.data = data.raceclass.id
-                form.event.data = data.event.id
-                form.time.data = data.time
-                form.lap_date.data = data.lap_date
-                form.is_best.data = data.is_best
 
         if form.validate_on_submit():
             if model_name == 'User':
@@ -302,6 +275,42 @@ def update(model_name, model_id):
             db.session.commit()
             flash(message, 'success')
             return redirect(url_for("admin.main", model_name=model_name))
+
+        if data:
+            if model_name == 'User':
+                form.admin.data = data.admin
+                if data.racer:
+                    form.racer = data.racer.id
+                    print(data.racer.id)
+            elif model_name == 'Track' or model_name == 'RaceClass':
+                form.name.data = data.name
+                form.short_name.data = data.short_name
+            elif model_name == 'Event':
+                form.name.data = data.name
+                form.start_date.data = data.start_date
+                form.end_date.data = data.end_date
+            elif model_name == 'Sponsor':
+                form.name.data = data.name
+            elif model_name == 'Car':
+                form.make.data = data.make
+                form.model.data = data.model
+                form.year.data = data.year
+                form.color.data = data.color
+                form.number.data = data.number
+            elif model_name == 'Racer':
+                form.email.data = data.email
+                form.name.data = data.name
+                form.city.data = data.city
+                form.state.data = data.state
+                form.points.data = data.points
+            elif model_name == 'BestLap':
+                data.name = " | ".join([data.racer.name, data.raceclass.name, data.event.name, str(data.time)])
+                form.racer.data = data.racer.id
+                form.raceclass.data = data.raceclass.id
+                form.event.data = data.event.id
+                form.time.data = data.time
+                form.lap_date.data = data.lap_date
+                form.is_best.data = data.is_best
         return render_template('admin/update.html', model_name=model_name, data=data, form=form, settings=UIServices.get_settings())
     else:
         flash('You are not an admin!', 'danger')

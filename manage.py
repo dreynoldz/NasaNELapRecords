@@ -124,9 +124,9 @@ def cov():
 
 @cli.command()
 def get_test():
-    model_name = 'Track'
-    d = DataServices.get_filter(eval(model_name),'id', 2, True)
-    print(d)
+    d = DataServices.get_model(User).first()
+    print(dir(d.keys()))
+    print(sorted(d.keys(), key=len))
     return 0
 
 

@@ -7,8 +7,13 @@
     <table class="table table-striped">
         <thead>
           <tr>
-            {% for col in data[0].__table__.columns.keys() %}
+            {% for col in sorted(data[0].keys(), key=len) %}
+              {% if 'id' == col %}
+                <th>#</th>
+              {% elif 'password' in col %}
+              {% else %}
                 <th>{{ col }}</th>
+              {% endif %}
             {% endfor %}
             <th>Actions</th>
           </tr>
@@ -16,20 +21,16 @@
         <tbody>
         {% for row in data %}
           <tr>
-              {% for col in data[0].__table__.columns.values() %}
-                {% set col_model = col.__str__().split('.')[0] %}
-                {% set col_name = col.__str__().split('.')[1] %}
-                {% set new_mod = col_name.split('_')[0] %}
-                {% if '_id' in col_name %}
-                  <td>{{ row[new_mod].name }}</td>
-                {% elif '_date' in col_name %}
-                  {% if row[col_name] %}
-                    <td>{{ row[col_name]|datetime_filter }}</td>
+              {% for col in sorted(data[0].keys(), key=len) %}
+                {% if '_date' in col %}
+                  {% if row[col] %}
+                    <td>{{ row[col]|datetime_filter }}</td>
                   {% else %}
                     <td></td>
                   {% endif %}
+                {% elif 'password' in col %}
                 {% else %}
-                  <td>{{ row[col_name] }}</td>
+                  <td>{{ row[col] }}</td>
                 {% endif %}
               {% endfor %}
             <td>

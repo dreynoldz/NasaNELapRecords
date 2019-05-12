@@ -99,7 +99,7 @@ class CarForm(FlaskForm):
         'Make',
         validators=[
             DataRequired(),
-            Length(min=6, max=80)
+            Length(min=1, max=80)
         ]
     )
     model = StringField(

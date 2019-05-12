@@ -6,6 +6,11 @@ class DataServices():
 
     def get_model(model_name):
         return db.session.query(model_name)
+    
+    def get_modelOrder(model_name, col, order):
+        column = getattr(model_name, col)
+        column_sorted = getattr(column, order)()
+        return DataServices.get_model(model_name).order_by(column_sorted)
 
     def get_filter(model_name, col, val, isFirst):
         filter = {col: val}

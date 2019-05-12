@@ -75,7 +75,7 @@ class User(db.Model, ModelMixin):
 
     def get_id(self):
         return self.id
-    
+
     def is_admin(self):
         return self.admin
 
