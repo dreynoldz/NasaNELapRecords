@@ -80,7 +80,7 @@ class User(db.Model, ModelMixin):
         return self.admin
 
     def __repr__(self):
-        return '<User {0}>'.format(self.email)
+        return '{0}'.format(self.email)
 
 class Track(db.Model, ModelMixin):
 
@@ -99,7 +99,7 @@ class Track(db.Model, ModelMixin):
         self.created_date = datetime.datetime.now()
     
     def __repr__(self):
-        return '<Track {0}>'.format(self.name)
+        return '{0}'.format(self.name)
 
 class Event(db.Model, ModelMixin):
     
@@ -121,7 +121,7 @@ class Event(db.Model, ModelMixin):
         self.created_date = datetime.datetime.now()
     
     def __repr__(self):
-        return '<Event {0}>'.format(self.name)
+        return '{0}'.format(self.name)
 
 class Sponsor(db.Model, ModelMixin):
 
@@ -137,7 +137,7 @@ class Sponsor(db.Model, ModelMixin):
         self.created_date = datetime.datetime.now()
     
     def __repr__(self):
-        return '<Sponsor {0}>'.format(self.name)
+        return '{0}'.format(self.name)
 
 class RaceClass(db.Model, ModelMixin):
 
@@ -157,7 +157,7 @@ class RaceClass(db.Model, ModelMixin):
         
     
     def __repr__(self):
-        return '<RaceClass {0}>'.format(self.name)
+        return '{0}'.format(self.name)
     
 class Car(db.Model, ModelMixin):
 
@@ -183,7 +183,7 @@ class Car(db.Model, ModelMixin):
         self.created_date = datetime.datetime.now()
     
     def __repr__(self):
-        return "<Car(number='%s', make='%s', model='%s')>" % (self.number, self.make, self.model)
+        return "#%s:%s_%s" % (self.number, self.make, self.model)
     
 class Racer(db.Model, ModelMixin):
 
@@ -212,7 +212,7 @@ class Racer(db.Model, ModelMixin):
         self.created_date = datetime.datetime.now()
     
     def __repr__(self):
-        return '<Racer {0}>'.format(self.name)
+        return '{0}'.format(self.name)
 
 class BestLap(db.Model, ModelMixin):
 

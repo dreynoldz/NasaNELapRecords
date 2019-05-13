@@ -6,10 +6,10 @@ from flask import render_template, Blueprint, url_for, \
 from flask_login import login_required, current_user
 from project.server import bcrypt, db
 from project.server.models import User, Car, CarRacer, RaceClass, Racer, RacerSponsor, Track, TrackEvent, \
-Event, Sponsor, BestLap
+Event, Sponsor, BestLap, Setting
 from project.server.dataservices import DataServices, UIServices
 from project.server.admin.forms import BestLapForm, CreateUserForm, UpdateUserForm, \
-    passwordResetForm, NameSNForm, EventForm, CarForm,RacerForm
+    passwordResetForm, NameSNForm, EventForm, CarForm,RacerForm,SponsorForm
 
 # Blueprints
 admin_blueprint = Blueprint('admin', __name__,)
@@ -25,7 +25,30 @@ def get_modelName():
 @login_required
 def overview():
     if current_user.is_admin():
-        return render_template('admin/overview.html', model_name=get_modelName(), settings=UIServices.get_settings())
+        models = DataServices.get_modelList()
+        data = {}
+        current_time = datetime.datetime.utcnow()
+        timedelta = DataServices.get_filterBy(Setting, 'name', 'TIMEDELTA', True)
+        if timedelta:
+            td = timedelta
+        else:
+            td = 30
+    
+        date_delta = current_time - datetime.timedelta(days=td)
+        for model in models:
+            if model == 'User':
+                col1 = 'registered_on'
+            else:
+                col1 = 'created_date'
+            col2 = 'updated_date'
+            att1 = getattr(eval(model), col1)
+            att2 = getattr(eval(model), col2)
+            dm = DataServices.get_model(eval(model)).filter((att1 > date_delta) | (att2 > date_delta))
+            orderedData = DataServices.get_modelOrder(dm, model, 'desc')
+            data[model]=[]
+            data[model].append(orderedData)
+            data[model].append(DataServices.get_columns(orderedData))
+        return render_template('admin/overview.html', data=data, model_name=get_modelName(), settings=UIServices.get_settings())
     else:
         flash('You are not an admin!', 'danger')
         return redirect(url_for("user.members"))
@@ -34,13 +57,10 @@ def overview():
 @login_required
 def main(model_name):
     if current_user.is_admin():
-        if model_name == 'User':
-            col = 'last_login'
-        elif model_name == 'Event':
-            col = 'start_date'
-        else:
-            col = 'id'
-        return render_template('admin/main.html', data=DataServices.get_modelOrder(eval(model_name), col, 'desc'), model_name=model_name, settings=UIServices.get_settings())
+        data = DataServices.get_model(eval(model_name))
+        orderedData = DataServices.get_modelOrder(data, model_name, 'desc')
+        cols = DataServices.get_columns(orderedData)
+        return render_template('admin/main.html',data=data, columns=cols, model_name=model_name, settings=UIServices.get_settings())
     else:
         flash('You are not an admin!', 'danger')
         return redirect(url_for("user.members"))
@@ -56,7 +76,7 @@ def create(model_name):
             form = NameSNForm(request.form)
         elif model_name == 'Event':
             form = EventForm(request.form)
-            form.tracks.choices = DataServices.get_trackChoices()
+            form.tracks.choices = DataServices.get_modelChoices(Track, 'name')
         elif model_name == 'Sponsor':
             form = SponsorForm(request.form)
         elif model_name == 'Car':
@@ -64,7 +84,7 @@ def create(model_name):
         elif model_name == 'Racer':
             form = RacerForm(request.form)
             form.cars.choices = DataServices.get_carChoices()
-            form.sponsors.choices = DataServices.get_sponsorChoices()
+            form.sponsors.choices = DataServices.get_modelChoices(Sponsor, 'name')
         if model_name == 'BestLap':
             form = BestLapForm(request.form)
             form.racer.choices = DataServices.get_availableRacers("NONE")
@@ -79,7 +99,7 @@ def create(model_name):
                     admin=form.admin.data
                 )
                 if form.racer.data != 0:
-                    racer = DataServices.get_filter(Racer, 'id', form.racer.data, True)
+                    racer = DataServices.get_filterBy(Racer, 'id', form.racer.data, True)
                     row.racer = racer
                 message = 'New user created.'
             elif model_name == 'Track':
@@ -96,7 +116,7 @@ def create(model_name):
                 )
                 for t in form.tracks.data:
                     if t != 0:
-                        track = DataServices.get_filter(eval(model_name), 'id', t, True)
+                        track = DataServices.get_filterBy(eval(model_name), 'id', t, True)
                         row.tracks.append(track)
                 message = 'New event created.'
             elif model_name == 'RaceClass':
@@ -130,12 +150,12 @@ def create(model_name):
 
                 for c in form.cars.data:
                     if c != 0:
-                        car = DataServices.get_filter(Car, 'id', c, True)
+                        car = DataServices.get_filterBy(Car, 'id', c, True)
                         row.cars.append(car)
                 
                 for s in form.sponsors.data:
                     if s != 0:
-                        sponsor = DataServices.get_filter(Sponsor, 'id', s, True)
+                        sponsor = DataServices.get_filterBy(Sponsor, 'id', s, True)
                         row.sponsors.append(sponsor)
                         
                 message = 'New racer created.'
@@ -167,10 +187,11 @@ def create(model_name):
 @login_required
 def update(model_name, model_id):
     if current_user.is_admin():
-        data =  DataServices.get_filter(eval(model_name), 'id', model_id, True)
+        data =  DataServices.get_filterBy(eval(model_name), 'id', model_id, True)
         if model_name == 'User':
             form = UpdateUserForm(request.form)
             form.racer.choices = DataServices.get_availableRacers(data.email)
+            print(data.email)
         elif model_name == 'Track' or model_name == 'RaceClass':
             form = NameSNForm(request.form)
         elif model_name == 'Event':
@@ -198,7 +219,7 @@ def update(model_name, model_id):
                     data.admin=0
 
                 if form.racer.data != 0:
-                    racer = DataServices.get_filter(Racer, 'id', form.racer.data, True)
+                    racer = DataServices.get_filterBy(Racer, 'id', form.racer.data, True)
                     data.racer = racer
                 else:
                     data.racer = None
@@ -219,7 +240,7 @@ def update(model_name, model_id):
                         remove_track_association(model_id)
                         tracks=[]
                     else:
-                        track = DataServices.get_filter(eval('Track'), 'id', t, True)
+                        track = DataServices.get_filterBy(eval('Track'), 'id', t, True)
                         data.tracks.append(track)
                 data.updated_date = datetime.datetime.now()
                 message = 'Event Updated.'
@@ -243,7 +264,7 @@ def update(model_name, model_id):
 
                 for c in form.cars.data:
                     if c != 0:
-                        car = DataServices.get_filter(eval('Car'), 'id', c, True)
+                        car = DataServices.get_filterBy(eval('Car'), 'id', c, True)
                         data.cars.append(car)
                     else:
                         DataServices.remove_car_association(model_id)
@@ -251,7 +272,7 @@ def update(model_name, model_id):
                 
                 for s in form.sponsors.data:
                     if s != 0:
-                        sponsor = DataServices.get_filter(eval('Sponsor'), 'id', s, True)
+                        sponsor = DataServices.get_filterBy(eval('Sponsor'), 'id', s, True)
                         data.sponsors.append(sponsor)
                     else:
                         DataServices.remove_sponsor_association(model_id)
@@ -320,14 +341,14 @@ def update(model_name, model_id):
 @login_required
 def delete(model_name,model_id):
     if current_user.is_admin():
-        row = DataServices.get_filter(eval(model_name), 'id', model_id, True)
+        row = DataServices.get_filterBy(eval(model_name), 'id', model_id, True)
         if model_name == 'User':
             row.racer = None
             message = 'The user was deleted.'
         elif model_name == 'Track':
-            trackEvents = DataServices.get_filter(eval('TrackEvent'), 'trackId', model_id, False)
+            trackEvents = DataServices.get_filterBy(eval('TrackEvent'), 'trackId', model_id, False)
             for trackEvent in trackEvents:
-                event =  DataServices.get_filter(eval('Event'), 'id', trackEvent.eventId, True)
+                event =  DataServices.get_filterBy(eval('Event'), 'id', trackEvent.eventId, True)
                 t.events.remove(event)
             message = 'The track was deleted.'
         elif model_name == 'Event':
@@ -337,9 +358,9 @@ def delete(model_name,model_id):
             #Cake is a Lie
             message = 'The track was deleted.'
         elif model_name == 'Car':
-            carRacers = DataServices.get_filter(CarRacer,'carId', model_id, False)
+            carRacers = DataServices.get_filterBy(CarRacer,'carId', model_id, False)
             for carRacer in carRacers:
-                racer = DataServices.get_filter(Racer, 'id', carRacer.racerId, True)
+                racer = DataServices.get_filterBy(Racer, 'id', carRacer.racerId, True)
                 c.racers.remove(racer)
             message = 'The car was deleted.'
         elif model_name == 'Racer':

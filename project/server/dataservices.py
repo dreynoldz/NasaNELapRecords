@@ -4,15 +4,25 @@ Event, Sponsor, BestLap, Setting
 # Helper Functions
 class DataServices():
 
+    def get_modelList():
+        return ['User', 'Car', 'RaceClass', 'Racer', 'Track', 'Event', 'Sponsor', 'BestLap']
+
     def get_model(model_name):
         return db.session.query(model_name)
     
-    def get_modelOrder(model_name, col, order):
-        column = getattr(model_name, col)
+    def get_modelOrder(data, model_name, order):
+        if model_name == 'User':
+            col = 'last_login'
+        elif model_name == 'Event':
+            col = 'start_date'
+        else:
+            col = 'id'
+        model = eval(model_name)
+        column = getattr(model, col)
         column_sorted = getattr(column, order)()
-        return DataServices.get_model(model_name).order_by(column_sorted)
-
-    def get_filter(model_name, col, val, isFirst):
+        return data.order_by(column_sorted)
+    
+    def get_filterBy(model_name, col, val, isFirst):
         filter = {col: val}
         if isFirst == True:
             return db.session.query(model_name).filter_by(**filter).first()
@@ -59,10 +69,10 @@ class DataServices():
             r.sponsors.remove(sponsor)
     
     def remove_sponsor_from_racer_association(sponsor_id):
-        sponsor = DataServices.get_filter(Sponsor, 'id', sponsor_id, True)
-        racerSponsors = DataServices.get_filter(RacerSponsor, 'sponsorId', sponsor_id, False)
+        sponsor = DataServices.get_filterBy(Sponsor, 'id', sponsor_id, True)
+        racerSponsors = DataServices.get_filterBy(RacerSponsor, 'sponsorId', sponsor_id, False)
         for racerSponsor in racerSponsors:
-            racer = DataServices.get_filter(Racer, 'id', racerSponsor.racerId, True)
+            racer = DataServices.get_filterBy(Racer, 'id', racerSponsor.racerId, True)
             racer.sponsors.remove(sponsor)
 
     def get_availableRacers(email):
@@ -75,6 +85,7 @@ class DataServices():
             availRacer = db.session.query(Racer).filter(Racer.email == email).first()
             if availRacer:
                 [availracers_list.append((availRacer.id, availRacer.name))]
+                print (availracers_list)
                 return availracers_list
             else:
                 availRacers = db.session.query(Racer).filter(Racer.user_id == None)
@@ -94,9 +105,24 @@ class DataServices():
         for trackEvent in trackEvents:
             track = db.session.query(Track).filter_by(id=trackEvent.trackId).first()
             e.tracks.remove(track)
-
     
-    
+    def get_columns(data):
+        cols = sorted(data.first().keys(), key=len)
+        i=0
+        length = len(cols)
+        while i < length:
+            if 'password' in cols[i]:
+                cols.remove(cols[i])
+                length = length - 1
+            elif 'laps' in cols[i]:
+                cols.remove(cols[i])
+                length = length - 1
+            elif '_id' in cols[i]:
+                cols.remove(cols[i])
+                length = length - 1
+            else:
+                i = i+1
+        return cols
 
 class UIServices():
 

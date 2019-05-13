@@ -11,6 +11,7 @@ from project.server.config import SiteSetting
 from project.server.models import Setting, User, Track, Event, Sponsor, RaceClass, Car, Racer, BestLap
 from project.server.dataservices import DataServices, UIServices
 from datetime import date
+import datetime
 from sqlalchemy.ext.serializer import loads, dumps
 
 
@@ -124,9 +125,25 @@ def cov():
 
 @cli.command()
 def get_test():
-    d = DataServices.get_model(User).first()
-    print(dir(d.keys()))
-    print(sorted(d.keys(), key=len))
+    #d = DataServices.get_model(User).first()
+    models = DataServices.get_modelList()
+    data = {}
+    current_time = datetime.datetime.utcnow()
+    date_delta = current_time - datetime.timedelta(days=30)
+    for model in models:
+        if model == 'User':
+            col1 = 'registered_on'
+        else:
+            col1 = 'created_date'
+        col2 = 'updated_date'
+        att1 = getattr(eval(model), col1)
+        att2 = getattr(eval(model), col2)
+        dm = DataServices.get_model(eval(model)).filter((att1 > date_delta) | (att2 > date_delta))
+        data[model]=[]
+        data[model].append(dm)
+        #print(dm.first().keys())
+        data[model].append(sorted(dm.first().keys(), key=len))
+    print(data['Track'][1])
     return 0
 
 

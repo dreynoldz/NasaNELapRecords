@@ -48,3 +48,4 @@ class SiteSetting():
     AUTHOR = 'Aaron Van Blarcom'
     EMAIL = 'aaron@van-blar.com'
     COPYRIGHT = 'AVB Designs'
+    TIMEDELTA = 30

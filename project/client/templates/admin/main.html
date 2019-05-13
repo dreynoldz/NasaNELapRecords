@@ -7,10 +7,9 @@
     <table class="table table-striped">
         <thead>
           <tr>
-            {% for col in sorted(data[0].keys(), key=len) %}
+            {% for col in columns %}
               {% if 'id' == col %}
                 <th>#</th>
-              {% elif 'password' in col %}
               {% else %}
                 <th>{{ col }}</th>
               {% endif %}
@@ -21,7 +20,7 @@
         <tbody>
         {% for row in data %}
           <tr>
-              {% for col in sorted(data[0].keys(), key=len) %}
+              {% for col in columns %}
                 {% if '_date' in col %}
                   {% if row[col] %}
                     <td>{{ row[col]|datetime_filter }}</td>
@@ -29,6 +28,7 @@
                     <td></td>
                   {% endif %}
                 {% elif 'password' in col %}
+                {% elif 'laps' == col %}
                 {% else %}
                   <td>{{ row[col] }}</td>
                 {% endif %}
