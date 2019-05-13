@@ -185,3 +185,54 @@ class BestLapForm(FlaskForm):
         validators=[DataRequired()]
     )
     is_best = BooleanField('Best Lap?')
+
+class SettingsForm(FlaskForm):
+    title = StringField(
+        'Title',
+        validators=[
+            DataRequired(),
+            Length(min=2, max=20)
+        ]
+    )
+    description = StringField(
+        'Description',
+        validators=[
+            DataRequired(),
+            Length(min=2, max=20)
+        ]
+    )
+    home = StringField(
+        'Home',
+        validators=[
+            DataRequired(),
+            Length(min=2, max=20)
+        ]
+    )
+    author = StringField(
+        'Author',
+        validators=[
+            DataRequired(),
+            Length(min=2, max=20)
+        ]
+    )
+    email = StringField(
+        'Email',
+        validators=[
+            DataRequired(),
+            Length(min=2, max=20)
+        ]
+    )
+    copyright = StringField(
+        'Copyright',
+        validators=[
+            DataRequired(),
+            Length(min=2, max=20)
+        ]
+    )
+    timedelta = IntegerField(
+        'Time Delta',
+        validators=[
+            DataRequired(),
+            NumberRange(min=0, max=365)
+        ]
+    )

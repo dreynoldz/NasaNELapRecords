@@ -53,6 +53,39 @@ def overview():
         flash('You are not an admin!', 'danger')
         return redirect(url_for("user.members"))
 
+@admin_blueprint.route('/settings', methods=['GET', 'POST'])
+@login_required
+def settings(model_name):
+    if current_user.is_admin():
+        data =  DataServices.get_model(eval(model_name))
+        form = SettingsForm(request.form)
+
+        if form.validate_on_submit():
+            data.title = form.title.data
+            data.description = form.description.data
+            data.home = form.home.data
+            data.author = form.author.data
+            data.email = form.email.data
+            data.copyright = form.copyright.data
+            data.timedelta = form.timedelta.data
+            db.session.commit()
+            flash('Track Updated.', 'success')
+            return redirect(url_for("admin.overview", model_name=get_modelName()))
+        
+        if data:
+            form.title.data = data.title
+            form.description.data = data.description
+            form.home.data = data.home
+            form.author.data = data.author
+            form.email.data = data.email
+            form.copyright.data = data.copyright
+            form.timedelta.data = data.timedelta
+            
+        return render_template('admin/settings.html', data=data, model_name='Setting', settings=UIServices.get_settings())
+    else:
+        flash('You are not an admin!', 'danger')
+        return redirect(url_for("user.members"))
+
 @admin_blueprint.route('/<model_name>/')
 @login_required
 def main(model_name):
@@ -60,7 +93,7 @@ def main(model_name):
         data = DataServices.get_model(eval(model_name))
         orderedData = DataServices.get_modelOrder(data, model_name, 'desc')
         cols = DataServices.get_columns(orderedData)
-        return render_template('admin/main.html',data=data, columns=cols, model_name=model_name, settings=UIServices.get_settings())
+        return render_template('admin/main.html',data=orderedData, columns=cols, model_name=model_name, settings=UIServices.get_settings())
     else:
         flash('You are not an admin!', 'danger')
         return redirect(url_for("user.members"))
@@ -349,7 +382,7 @@ def delete(model_name,model_id):
             trackEvents = DataServices.get_filterBy(eval('TrackEvent'), 'trackId', model_id, False)
             for trackEvent in trackEvents:
                 event =  DataServices.get_filterBy(eval('Event'), 'id', trackEvent.eventId, True)
-                t.events.remove(event)
+                row.events.remove(event)
             message = 'The track was deleted.'
         elif model_name == 'Event':
             DataServices.remove_track_association(model_id)
@@ -361,7 +394,7 @@ def delete(model_name,model_id):
             carRacers = DataServices.get_filterBy(CarRacer,'carId', model_id, False)
             for carRacer in carRacers:
                 racer = DataServices.get_filterBy(Racer, 'id', carRacer.racerId, True)
-                c.racers.remove(racer)
+                row.racers.remove(racer)
             message = 'The car was deleted.'
         elif model_name == 'Racer':
             DataServices.remove_car_association(model_id)
@@ -373,7 +406,7 @@ def delete(model_name,model_id):
         db.session.delete(row)
         db.session.commit()
         flash(message, 'success')
-        return redirect(url_for('admin.main', modelNmodel_nameame=model_name, settings=UIServices.get_settings()))
+        return redirect(url_for('admin.main', model_name=model_name, settings=UIServices.get_settings()))
     else:
         flash('You are not an admin!', 'danger')
         return redirect(url_for("user.members"))
