@@ -79,7 +79,7 @@ class EventForm(FlaskForm):
         'Name',
         validators=[
             DataRequired(),
-            Length(min=5, max=40)
+            Length(min=5, max=100)
         ]
     )
     start_date = DateField(

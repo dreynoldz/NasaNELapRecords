@@ -3,9 +3,8 @@
 import sys, datetime
 from flask import render_template, Blueprint, url_for, \
     redirect, flash, request
-
 from flask_login import login_required, current_user
-from project.server import bcrypt, db
+from project.server import bcrypt, db, cache
 from project.server.models import User, Car, CarRacer, RaceClass, Racer, RacerSponsor, Track, TrackEvent, \
 Event, Sponsor, BestLap, Setting
 from project.server.dataservices import DataServices, UIServices
@@ -23,6 +22,7 @@ def get_modelName():
 # Main
 @admin_blueprint.route('/overview')
 @login_required
+@cache.memoize(50)
 def overview():
     if current_user.is_admin():
         models = DataServices.get_modelList()
@@ -60,6 +60,7 @@ def overview():
 
 @admin_blueprint.route('/<model_name>/')
 @login_required
+@cache.memoize(50)
 def main(model_name):
     if current_user.is_admin():
         data = DataServices.get_model(eval(model_name))
