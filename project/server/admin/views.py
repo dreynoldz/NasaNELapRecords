@@ -46,8 +46,13 @@ def overview():
             dm = DataServices.get_model(eval(model)).filter((att1 > date_delta) | (att2 > date_delta))
             orderedData = DataServices.get_modelOrder(dm, model, 'desc')
             data[model]=[]
-            data[model].append(orderedData)
-            data[model].append(DataServices.get_columns(orderedData))
+            if orderedData.first() is not None:
+                data[model].append(orderedData)
+                data[model].append(DataServices.get_columns(orderedData))
+            else:
+                data[model].append('No Data')
+                data[model].append('No Data')
+
         return render_template('admin/overview.html', data=data, model_name=get_modelName(), settings=UIServices.get_settings())
     else:
         flash('You are not an admin!', 'danger')
