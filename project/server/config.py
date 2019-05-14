@@ -12,6 +12,8 @@ class BaseConfig(object):
     DEBUG_TB_ENABLED = False
     DEBUG_TB_INTERCEPT_REDIRECTS = False
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    CACHE_TYPE =  "simple"
+    CACHE_DEFAULT_TIMEOUT = 300
 
 
 class DevelopmentConfig(BaseConfig):

@@ -5,6 +5,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SelectMultipleField, DateField, \
     FloatField, SelectField, IntegerField
 from wtforms.validators import DataRequired, Email, Length, EqualTo, NumberRange
+from wtforms.fields.html5 import DateField
 
 class CreateUserForm(FlaskForm):
     email = StringField(
@@ -68,6 +69,12 @@ class NameSNForm(FlaskForm):
     )
 
 class EventForm(FlaskForm):
+    external_id = IntegerField(
+        'External ID',
+        validators=[
+            NumberRange(min=0, max=9999999)
+        ]
+    )
     name = StringField(
         'Name',
         validators=[
@@ -187,52 +194,17 @@ class BestLapForm(FlaskForm):
     is_best = BooleanField('Best Lap?')
 
 class SettingsForm(FlaskForm):
-    title = StringField(
-        'Title',
+    name = StringField(
+        'Name',
         validators=[
             DataRequired(),
             Length(min=2, max=20)
         ]
     )
-    description = StringField(
-        'Description',
+    value = StringField(
+        'Value',
         validators=[
             DataRequired(),
-            Length(min=2, max=20)
-        ]
-    )
-    home = StringField(
-        'Home',
-        validators=[
-            DataRequired(),
-            Length(min=2, max=20)
-        ]
-    )
-    author = StringField(
-        'Author',
-        validators=[
-            DataRequired(),
-            Length(min=2, max=20)
-        ]
-    )
-    email = StringField(
-        'Email',
-        validators=[
-            DataRequired(),
-            Length(min=2, max=20)
-        ]
-    )
-    copyright = StringField(
-        'Copyright',
-        validators=[
-            DataRequired(),
-            Length(min=2, max=20)
-        ]
-    )
-    timedelta = IntegerField(
-        'Time Delta',
-        validators=[
-            DataRequired(),
-            NumberRange(min=0, max=365)
+            Length(min=1, max=20)
         ]
     )

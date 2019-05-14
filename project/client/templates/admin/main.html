@@ -3,45 +3,50 @@
 
   <p><a href="{{ url_for('admin.create', model_name=model_name) }}" class="btn btn-md btn-success">Create {{ modelName }}</a></p>
   <h2 class="sub-header">Current {{ model_name }}</h2>
-  <div class="table-responsive">
-    <table class="table table-striped">
-        <thead>
-          <tr>
-            {% for col in columns %}
-              {% if 'id' == col %}
-                <th>#</th>
-              {% else %}
-                <th>{{ col }}</th>
-              {% endif %}
-            {% endfor %}
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-        {% for row in data %}
-          <tr>
+  {% if columns != 'No Data' %}
+    <div class="table-responsive">
+      <table class="table table-striped">
+          <thead>
+            <tr>
               {% for col in columns %}
-                {% if '_date' in col %}
-                  {% if row[col] %}
-                    <td>{{ row[col]|datetime_filter }}</td>
-                  {% else %}
-                    <td></td>
-                  {% endif %}
-                {% elif 'password' in col %}
-                {% elif 'laps' == col %}
+                {% if 'id' == col %}
+                  <th>#</th>
                 {% else %}
-                  <td>{{ row[col] }}</td>
+                  <th>{{ col }}</th>
                 {% endif %}
               {% endfor %}
-            <td>
-              <a href="{{ url_for('admin.update', model_name=model_name, model_id = row.id) }}" class="btn btn-xs btn-info"><span class="glyphicon glyphicon-edit"></span></a>
-              <a href="{{ url_for('admin.delete', model_name=model_name, model_id = row.id) }}" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-remove"></span></a>
-            </td>
-          </tr>
-        {% endfor %}
-        </tbody>
-      </table>
-  </div>
-
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for row in data %}
+            <tr>
+                {% for col in columns %}
+                  {% if '_date' in col %}
+                    {% if row[col] %}
+                      <td>{{ row[col]|datetime_filter }}</td>
+                    {% else %}
+                      <td></td>
+                    {% endif %}
+                  {% elif 'password' in col %}
+                  {% elif 'laps' == col %}
+                  {% else %}
+                    <td>{{ row[col] }}</td>
+                  {% endif %}
+                {% endfor %}
+              <td>
+                <a href="{{ url_for('admin.update', model_name=model_name, model_id = row.id) }}" class="btn btn-xs btn-info"><span class="glyphicon glyphicon-edit"></span></a>
+                <a href="{{ url_for('admin.delete', model_name=model_name, model_id = row.id) }}" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-remove"></span></a>
+              </td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="table-responsive">
+      No Data
+    </div>
+    {% endif %}
 
 {% endblock %}

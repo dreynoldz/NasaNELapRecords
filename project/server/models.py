@@ -91,6 +91,7 @@ class Track(db.Model, ModelMixin):
     short_name = db.Column(db.String(255), nullable=False)
     created_date = db.Column(db.DateTime, default=datetime.datetime.utcnow(), nullable=False)
     updated_date = db.Column(db.DateTime, nullable=True)
+    laps = db.relationship('BestLap', backref='track')
     #lap_distance = db.Column(db.Float)
 
     def __init__(self, name, short_name):
@@ -113,12 +114,14 @@ class Event(db.Model, ModelMixin):
     laps = db.relationship('BestLap', backref='event')
     created_date = db.Column(db.DateTime, default=datetime.datetime.utcnow(), nullable=False)
     updated_date = db.Column(db.DateTime, nullable=True)
+    external_id = db.Column(db.Integer, nullable=True)
 
-    def __init__(self, name, start_date, end_date):
+    def __init__(self, name, start_date, end_date,external_id=None):
         self.name = name
         self.start_date = start_date
         self.end_date = end_date
         self.created_date = datetime.datetime.now()
+        self.external_id = external_id
     
     def __repr__(self):
         return '{0}'.format(self.name)
@@ -222,16 +225,18 @@ class BestLap(db.Model, ModelMixin):
     racer_id = db.Column(db.Integer, db.ForeignKey('racers.id'), nullable=False, key='Racer')
     raceclass_id = db.Column(db.Integer, db.ForeignKey('raceclasses.id'), nullable=False, key='Race Class')
     event_id = db.Column(db.Integer, db.ForeignKey('events.id'), nullable=False, key='Event')
+    track_id = db.Column(db.Integer, db.ForeignKey('tracks.id'), nullable=False, key='Track')
     time = db.Column(db.Float, key='Lap Time')
     lap_date = db.Column(db.DateTime, nullable=True, key='Lap Date')
     best = db.Column(db.Boolean, nullable=False, default=False, key='Is Best?')
     created_date = db.Column(db.DateTime, default=datetime.datetime.utcnow(), nullable=False, key='Create Date')
     updated_date = db.Column(db.DateTime, nullable=True, key='Update Date')
 
-    def __init__(self, racer_id, raceclass_id, event_id, time, lap_date, best=False):
+    def __init__(self, racer_id, raceclass_id, event_id, track_id, time, lap_date, best=False):
         self.racer_id = racer_id
         self.raceclass_id = raceclass_id
         self.event_id = event_id
+        self.track_id = track_id
         self.time = time
         self.lap_date = lap_date
         self.best = best

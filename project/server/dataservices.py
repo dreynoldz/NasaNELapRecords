@@ -1,6 +1,10 @@
 from project.server import db
+from flask import request
 from project.server.models import User, Car, CarRacer, RaceClass, Racer, RacerSponsor, Track, TrackEvent, \
 Event, Sponsor, BestLap, Setting
+from project.server.admin.forms import BestLapForm, CreateUserForm, UpdateUserForm, \
+    passwordResetForm, NameSNForm, EventForm, CarForm,RacerForm,SponsorForm,SettingsForm
+
 # Helper Functions
 class DataServices():
 
@@ -44,14 +48,6 @@ class DataServices():
         print(car_list)
         return car_list
 
-    def get_sponsorChoices():
-        sponsors = DataServices.get_model(Sponsor)
-        sponsor_list = [(0, "---")]
-        [sponsor_list.append((s.id, s.name)) for s in sponsors.order_by(Sponsor.name).all()]
-        print("sponsor_list")
-        print(sponsor_list)
-        return sponsor_list
-
     def remove_car_association(racer_id):
         racer = db.session.query(Racer).filter_by(id=racer_id)
         r = racer.first()
@@ -92,12 +88,6 @@ class DataServices():
                 [availracers_list.append((a.id, a.name)) for a in availRacers.order_by(Racer.name).all()]
                 return availracers_list
 
-    def get_trackChoices():
-        tracks = DataServices.get_model(Track)
-        track_list = [(0, "---")]
-        [track_list.append((t.id, t.name)) for t in tracks.order_by(Track.name).all()]
-        return track_list
-
     def remove_track_association(event_id):
         event = db.session.query(Event).filter_by(id=event_id)
         e = event.first()
@@ -123,6 +113,32 @@ class DataServices():
             else:
                 i = i+1
         return cols
+    
+    def get_form(model_name):
+        if model_name == 'User':
+            form = UpdateUserForm(request.form)
+            form.racer.choices = DataServices.get_availableRacers("NONE")
+        elif model_name == 'Track' or model_name == 'RaceClass':
+            form = NameSNForm(request.form)
+        elif model_name == 'Event':
+            form = EventForm(request.form)
+            form.tracks.choices = DataServices.get_modelChoices(Track, 'name')
+        elif model_name == 'Sponsor':
+            form = SponsorForm(request.form)
+        elif model_name == 'Car':
+            form = CarForm(request.form)
+        elif model_name == 'Racer':
+            form = RacerForm(request.form)
+            form.cars.choices = DataServices.get_carChoices()
+            form.sponsors.choices = DataServices.get_modelChoices(Sponsor, 'name')
+        elif model_name == 'BestLap':
+            form = BestLapForm(request.form)
+            form.racer.choices = DataServices.get_availableRacers("NONE")
+            form.raceclass.choices = DataServices.get_modelChoices(RaceClass, 'name')
+            form.event.choices = DataServices.get_modelChoices(Event, 'name')
+        elif model_name == 'Setting':
+            form = SettingsForm(request.form)
+        return form
 
 class UIServices():
 

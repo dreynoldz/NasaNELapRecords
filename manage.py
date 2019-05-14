@@ -55,6 +55,11 @@ def create_data():
     """Creates sample data."""    
     t1 = Track(name='Watkins Glen International', short_name='WGI')
     t2 = Track(name='Pocono South-East', short_name="POCSE")
+    t3 = Track(name='New York Safety Track', short_name="NYST")
+    t4 = Track(name='New Jersey Motorsports Park - Thunderbolt', short_name="NJMPT")
+    t5 = Track(name='Lime Rock Park', short_name="LRP")
+    t6 = Track(name='Palmer Motorsports Park', short_name="PAL")
+    t7 = Track(name='New Jersey Motorsports Park - Lightning', short_name="NJMPL")
     
     e1 = Event(name='Summer Sizzle 2018', start_date = date(2018, 8, 27), end_date=date(2018, 8, 28))
     e2 = Event(name='MPACT', start_date = date(2018, 8, 11), end_date=date(2018, 8, 11))
@@ -71,14 +76,14 @@ def create_data():
     e3.tracks.append(t1)
     r1.cars.append(c1)
     r1.sponsors.append(s1)    
-    db.session.add_all([t1,t2])
+    db.session.add_all([t1,t2,t3,t4,t5,t6,t7])
     db.session.add_all([e1, e2, e3])
     db.session.add(s1)
     db.session.add(rc1)
     db.session.add(c1)
     db.session.add(r1)
     db.session.commit()
-    bl = BestLap(racer_id=r1.id, raceclass_id=rc1.id, event_id=e3.id, time=60.0, best=True, lap_date = date(2018, 10, 14))
+    bl = BestLap(racer_id=r1.id, raceclass_id=rc1.id, event_id=e3.id,track_id=e3.tracks[0].id, time=60.0, best=True, lap_date = date(2018, 10, 14))
     db.session.add(bl)
     db.session.commit()
     print(e1.name)
@@ -125,25 +130,16 @@ def cov():
 
 @cli.command()
 def get_test():
-    #d = DataServices.get_model(User).first()
-    models = DataServices.get_modelList()
-    data = {}
-    current_time = datetime.datetime.utcnow()
-    date_delta = current_time - datetime.timedelta(days=30)
-    for model in models:
-        if model == 'User':
-            col1 = 'registered_on'
-        else:
-            col1 = 'created_date'
-        col2 = 'updated_date'
-        att1 = getattr(eval(model), col1)
-        att2 = getattr(eval(model), col2)
-        dm = DataServices.get_model(eval(model)).filter((att1 > date_delta) | (att2 > date_delta))
-        data[model]=[]
-        data[model].append(dm)
-        #print(dm.first().keys())
-        data[model].append(sorted(dm.first().keys(), key=len))
-    print(data['Track'][1])
+    model_name = 'User'
+    #orderedData = DataServices.get_modelOrder(model_name, 'desc')
+    orderedData = DataServices.get_modelOrder(model_name, 'desc')
+    if orderedData[0] is not None:
+            cols = DataServices.get_columns(orderedData)
+    else:
+        cols = 'No Data'
+    print(orderedData)
+    print(cols)
+    
     return 0
 
 
