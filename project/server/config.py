@@ -14,6 +14,7 @@ class BaseConfig(object):
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     CACHE_TYPE =  "simple"
     CACHE_DEFAULT_TIMEOUT = 300
+    POSTS_PER_PAGE = 10
 
 
 class DevelopmentConfig(BaseConfig):

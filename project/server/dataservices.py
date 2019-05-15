@@ -145,6 +145,9 @@ class UIServices():
     def get_pghead(header):
         return header
     
+    def get_rowsPerPage():
+        return 10
+    
     def get_settings():
         db_settings = DataServices.get_model(Setting)
         setting_dict = {}

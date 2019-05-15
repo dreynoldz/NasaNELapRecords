@@ -58,18 +58,20 @@ def overview():
         flash('You are not an admin!', 'danger')
         return redirect(url_for("user.members"))
 
-@admin_blueprint.route('/<model_name>/')
+@admin_blueprint.route('/<model_name>/<int:page>')
 @login_required
 @cache.memoize(50)
-def main(model_name):
+def main(model_name, page):
     if current_user.is_admin():
         data = DataServices.get_model(eval(model_name))
         orderedData = DataServices.get_modelOrder(data, model_name, 'desc')
         if orderedData.first() is not None:
             cols = DataServices.get_columns(orderedData)
+            pageData = orderedData.paginate(page, UIServices.get_rowsPerPage(), False)
         else:
             cols = 'No Data'
-        return render_template('admin/main.html',data=orderedData, columns=cols, model_name=model_name, settings=UIServices.get_settings())
+        
+        return render_template('admin/main.html',data=pageData.items, columns=cols, model_name=model_name, settings=UIServices.get_settings())
     else:
         flash('You are not an admin!', 'danger')
         return redirect(url_for("user.members"))
