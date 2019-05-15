@@ -130,16 +130,8 @@ def cov():
 
 @cli.command()
 def get_test():
-    model_name = 'User'
-    #orderedData = DataServices.get_modelOrder(model_name, 'desc')
-    orderedData = DataServices.get_modelOrder(model_name, 'desc')
-    if orderedData[0] is not None:
-            cols = DataServices.get_columns(orderedData)
-    else:
-        cols = 'No Data'
-    print(orderedData)
-    print(cols)
-    
+    settings = SiteSetting()
+    print(SiteSetting().HOME)
     return 0
 
 

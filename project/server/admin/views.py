@@ -5,6 +5,7 @@ from flask import render_template, Blueprint, url_for, \
     redirect, flash, request
 from flask_login import login_required, current_user
 from project.server import bcrypt, db, cache
+from project.server.config import SiteSetting
 from project.server.models import User, Car, CarRacer, RaceClass, Racer, RacerSponsor, Track, TrackEvent, \
 Event, Sponsor, BestLap, Setting
 from project.server.dataservices import DataServices, UIServices
@@ -67,11 +68,12 @@ def main(model_name, page):
         orderedData = DataServices.get_modelOrder(data, model_name, 'desc')
         if orderedData.first() is not None:
             cols = DataServices.get_columns(orderedData)
-            pageData = orderedData.paginate(page, UIServices.get_rowsPerPage(), False)
+            pageData = orderedData.paginate(page, SiteSetting().PER_PAGE, False)
         else:
             cols = 'No Data'
+            pageData = 'No Data'
         
-        return render_template('admin/main.html',data=pageData.items, columns=cols, model_name=model_name, settings=UIServices.get_settings())
+        return render_template('admin/main.html',pagination=pageData, columns=cols, model_name=model_name, settings=UIServices.get_settings())
     else:
         flash('You are not an admin!', 'danger')
         return redirect(url_for("user.members"))
@@ -175,7 +177,7 @@ def create(model_name):
             db.session.add(row)
             db.session.commit() 
             flash(message, 'success')
-            return redirect(url_for("admin.main", model_name=model_name))
+            return redirect(url_for("admin.main", model_name=model_name, page=1))
         return render_template('admin/create.html', form=form, model_name=model_name, settings=UIServices.get_settings())
     else:
         flash('You are not an admin!', 'danger') 
@@ -277,7 +279,7 @@ def update(model_name, model_id):
 
             db.session.commit()
             flash(message, 'success')
-            return redirect(url_for("admin.main", model_name=model_name))
+            return redirect(url_for("admin.main", model_name=model_name, page=1))
 
         if data:
             if model_name == 'User':
@@ -363,7 +365,7 @@ def delete(model_name,model_id):
         db.session.delete(row)
         db.session.commit()
         flash(message, 'success')
-        return redirect(url_for('admin.main', model_name=model_name, settings=UIServices.get_settings()))
+        return redirect(url_for('admin.main', model_name=model_name, page=1, settings=UIServices.get_settings()))
     else:
         flash('You are not an admin!', 'danger')
         return redirect(url_for("user.members"))

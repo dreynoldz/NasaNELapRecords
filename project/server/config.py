@@ -52,3 +52,4 @@ class SiteSetting():
     EMAIL = 'aaron@van-blar.com'
     COPYRIGHT = 'AVB Designs'
     TIMEDELTA = 30
+    PER_PAGE = 10
