@@ -7,7 +7,7 @@ from flask_login import login_required, current_user
 from project.server import bcrypt, db, cache
 from project.server.config import SiteSetting
 from project.server.models import User, Car, CarRacer, RaceClass, Racer, RacerSponsor, Track, TrackEvent, \
-Event, Sponsor, BestLap, Setting
+Event, Sponsor, BestLap, Setting, Page
 from project.server.dataservices import DataServices, UIServices
 
 
@@ -25,8 +25,9 @@ def get_modelName():
 @login_required
 @cache.memoize(50)
 def overview():
+    settings = UIServices.get_settings()
     if current_user.is_admin():
-        models = DataServices.get_modelList()
+        models = DataServices.get_filterBy(Page, 'active', True, False)
         data = {}
         current_time = datetime.datetime.utcnow()
         timedelta = DataServices.get_filterBy(Setting, 'name', 'TIMEDELTA', True)
@@ -37,6 +38,7 @@ def overview():
     
         date_delta = current_time - datetime.timedelta(days=td)
         for model in models:
+            model = model.name
             if model == 'User':
                 col1 = 'registered_on'
             else:
@@ -45,7 +47,7 @@ def overview():
             att1 = getattr(eval(model), col1)
             att2 = getattr(eval(model), col2)
             dm = DataServices.get_model(eval(model)).filter((att1 > date_delta) | (att2 > date_delta))
-            orderedData = DataServices.get_modelOrder(dm, model, 'desc')
+            orderedData = DataServices.get_modelOrder(dm, model, 'desc').limit(int(settings['PER_PAGE']))
             data[model]=[]
             if orderedData.first() is not None:
                 data[model].append(orderedData)
@@ -54,7 +56,30 @@ def overview():
                 data[model].append('No Data')
                 data[model].append('No Data')
 
-        return render_template('admin/overview.html', data=data, model_name=get_modelName(), settings=UIServices.get_settings())
+        return render_template('admin/overview.html', data=data, model_name=get_modelName(), settings=settings)
+    else:
+        flash('You are not an admin!', 'danger')
+        return redirect(url_for("user.members"))
+
+@admin_blueprint.route('/setting')
+@login_required
+@cache.memoize(50)
+def setting():
+    settings = UIServices.get_settings()
+    if current_user.is_admin():
+        models = UIServices.get_settingModelList()
+        data = {}
+        for model in models:
+            dm = DataServices.get_model(eval(model))
+            data[model]=[]
+            if dm.first() is not None:
+                data[model].append(dm)
+                data[model].append(DataServices.get_columns(dm))
+            else:
+                data[model].append('No Data')
+                data[model].append('No Data')
+
+        return render_template('admin/overview.html', data=data, model_name='Setting', settings=settings)
     else:
         flash('You are not an admin!', 'danger')
         return redirect(url_for("user.members"))
@@ -63,17 +88,18 @@ def overview():
 @login_required
 @cache.memoize(50)
 def main(model_name, page):
+    settings = UIServices.get_settings()
     if current_user.is_admin():
         data = DataServices.get_model(eval(model_name))
         orderedData = DataServices.get_modelOrder(data, model_name, 'desc')
         if orderedData.first() is not None:
             cols = DataServices.get_columns(orderedData)
-            pageData = orderedData.paginate(page, SiteSetting().PER_PAGE, False)
+            pageData = orderedData.paginate(page, int(settings['PER_PAGE']), False)
         else:
             cols = 'No Data'
             pageData = 'No Data'
         
-        return render_template('admin/main.html',pagination=pageData, columns=cols, model_name=model_name, settings=UIServices.get_settings())
+        return render_template('admin/main.html',pagination=pageData, columns=cols, model_name=model_name, settings=settings)
     else:
         flash('You are not an admin!', 'danger')
         return redirect(url_for("user.members"))
@@ -173,6 +199,12 @@ def create(model_name):
                     value=form.value.data
                 )
                 message = 'New setting created.'
+            elif model_name == 'Page':
+                row = Page(
+                    name=form.name.data,
+                    active=form.value.data
+                )
+                message = 'New Page created.'
                 
             db.session.add(row)
             db.session.commit() 
@@ -276,6 +308,13 @@ def update(model_name, model_id):
                 data.name = form.name.data
                 data.value = form.value.data
                 message = 'Settings Updated.'
+            elif model_name == 'Page':
+                if form.active.data == True:
+                    data.active=1
+                else:
+                    data.active=0
+                data.name = form.name.data
+                message = 'Pages Updated.'
 
             db.session.commit()
             flash(message, 'success')
@@ -320,6 +359,9 @@ def update(model_name, model_id):
             elif model_name == 'Setting':
                 form.name.data = data.name
                 form.value.data = data.value
+            elif model_name == 'Page':
+                form.active.data = data.active
+                form.name.data = data.name
 
         return render_template('admin/update.html', model_name=model_name, data=data, form=form, settings=UIServices.get_settings())
     else:

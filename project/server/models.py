@@ -42,6 +42,21 @@ class Setting(db.Model, ModelMixin):
     name = db.Column(db.String(255), nullable=False)
     value = db.Column(db.String(255), nullable=False)
 
+class Page(db.Model, ModelMixin):
+
+    __tablename__ = 'pages'
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String(255), nullable=False)
+    active = db.Column(db.Boolean, nullable=False, default=False)
+
+    def __init__(self, name, active=False):
+        self.name = name
+        self.active = active
+
+    def is_active(self):
+        return self.active
+
 class User(db.Model, ModelMixin):
 
     __tablename__ = 'users'

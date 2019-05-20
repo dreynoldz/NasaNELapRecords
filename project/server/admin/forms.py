@@ -208,3 +208,13 @@ class SettingsForm(FlaskForm):
             Length(min=1, max=20)
         ]
     )
+
+class PagesForm(FlaskForm):
+    name = StringField(
+        'Name',
+        validators=[
+            DataRequired(),
+            Length(min=2, max=20)
+        ]
+    )
+    active = BooleanField('Active')

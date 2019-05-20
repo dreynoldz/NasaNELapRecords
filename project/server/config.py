@@ -53,3 +53,14 @@ class SiteSetting():
     COPYRIGHT = 'AVB Designs'
     TIMEDELTA = 30
     PER_PAGE = 10
+
+class PageSetup():
+    """Setup the Page defaults."""
+    User = True
+    Car = True
+    RaceClass = True
+    Racer = True
+    Track = True
+    Event = True
+    Sponsor = True
+    BestLap = True

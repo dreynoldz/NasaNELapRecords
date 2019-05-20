@@ -7,8 +7,8 @@ import coverage
 from flask.cli import FlaskGroup
 
 from project.server import create_app, db
-from project.server.config import SiteSetting
-from project.server.models import Setting, User, Track, Event, Sponsor, RaceClass, Car, Racer, BestLap
+from project.server.config import SiteSetting, PageSetup
+from project.server.models import Setting, User, Track, Event, Sponsor, RaceClass, Car, Racer, BestLap, Page
 from project.server.dataservices import DataServices, UIServices
 from datetime import date
 import datetime
@@ -102,7 +102,17 @@ def create_settings():
             db.session.add(Setting(name=setting, value=getattr(settings,setting)))
             print(setting,"=",getattr(settings,setting))
     db.session.commit()
-    
+
+@cli.command()
+def create_pages():
+    """Creates site pages."""
+    pages = PageSetup()
+    for page in dir(pages):
+        if not page.startswith('__') and not callable(getattr(pages,page)):
+            db.session.add(Page(name=page, active=getattr(pages,page)))
+            print(page,"=",getattr(pages,page))
+    db.session.commit()
+
 @cli.command()
 def test():
     """Runs the unit tests without test coverage."""
@@ -130,8 +140,11 @@ def cov():
 
 @cli.command()
 def get_test():
-    settings = SiteSetting()
-    print(SiteSetting().HOME)
+    models = UIServices.get_modelList()
+    for model in models:
+        model = model.name
+        #print(dir(model))
+        print(model)
     return 0
 
 

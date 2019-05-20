@@ -1,6 +1,9 @@
 {% extends "_baseDashboard.html" %}
 {% block content %}
-
+{% set per_page = settings.PER_PAGE | int %}
+{% set page = pagination.page | int %}
+{% set first = (per_page * page) - (per_page - 1) %}
+{% set last = (per_page * page)%}
   <p><a href="{{ url_for('admin.create', model_name=model_name) }}" class="btn btn-md btn-success">Create {{ modelName }}</a></p>
   <h2 class="sub-header">Current {{ model_name }}</h2>
   {% if columns != 'No Data' %}
@@ -43,6 +46,20 @@
           </tbody>
         </table>
     </div>
+    <div class=pagination>
+      {%- for page in pagination.iter_pages() %}
+        {% if page %}
+          {% if page != pagination.page %}
+            <a href="{{ url_for('admin.main', model_name=model_name, page=page) }}">{{ page }}</a>
+          {% else %}
+            <strong>{{ page }}</strong>
+          {% endif %}
+        {% else %}
+          <span class=ellipsis>…</span>
+        {% endif %}
+      {%- endfor %}
+    </div class=pagination>
+    <div>Total {{ pagination.total }} Records, displaying {{ first }} - {{ last }}</div>
     {% else %}
     <div class="table-responsive">
       No Data

@@ -1,19 +1,16 @@
 from project.server import db
 from flask import request
 from project.server.models import User, Car, CarRacer, RaceClass, Racer, RacerSponsor, Track, TrackEvent, \
-Event, Sponsor, BestLap, Setting
+Event, Sponsor, BestLap, Setting, Page
 from project.server.admin.forms import BestLapForm, CreateUserForm, UpdateUserForm, \
-    passwordResetForm, NameSNForm, EventForm, CarForm,RacerForm,SponsorForm,SettingsForm
+    passwordResetForm, NameSNForm, EventForm, CarForm,RacerForm,SponsorForm,SettingsForm,PagesForm
 
 # Helper Functions
 class DataServices():
 
-    def get_modelList():
-        return ['User', 'Car', 'RaceClass', 'Racer', 'Track', 'Event', 'Sponsor', 'BestLap']
-
     def get_model(model_name):
         return db.session.query(model_name)
-    
+
     def get_modelOrder(data, model_name, order):
         if model_name == 'User':
             col = 'last_login'
@@ -138,6 +135,8 @@ class DataServices():
             form.event.choices = DataServices.get_modelChoices(Event, 'name')
         elif model_name == 'Setting':
             form = SettingsForm(request.form)
+        elif model_name == 'Page':
+            form = PagesForm(request.form)
         return form
 
 class UIServices():
@@ -148,6 +147,13 @@ class UIServices():
     def get_rowsPerPage():
         return 10
     
+    def get_modelList():
+        #['User', 'Car', 'RaceClass', 'Racer', 'Track', 'Event', 'Sponsor', 'BestLap']
+        return db.session.query(Page.name).all()
+    
+    def get_settingModelList():
+        return ['Setting', 'Page']
+
     def get_settings():
         db_settings = DataServices.get_model(Setting)
         setting_dict = {}
